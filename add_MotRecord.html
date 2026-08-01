@@ -166,8 +166,7 @@
                     <label for="baseSelect" class="form-label">Base</label>
 
                     <select id="baseSelect" class="form-select" required>
-                        <option value="">Select base</option>
-                        <option value="All Bases">All Bases</option>
+                        <option value="All Bases" selected>All Bases</option>
                         <option value="Canvey">Canvey</option>
                         <option value="Chelmsford">Chelmsford</option>
                         <option value="Southend">Southend</option>
@@ -182,9 +181,8 @@
                             id="vehicleSearch"
                             class="form-control"
                             type="search"
-                            placeholder="Type registration, fleet number, make or model"
+                            placeholder="Type registration, fleet number, make or model (e.g. AMB142)"
                             autocomplete="off"
-                            disabled
                         >
 
                         <div id="vehicleResults" class="vehicle-results"></div>
@@ -328,8 +326,21 @@
         function parseDate(value) {
             if (!value) return null;
 
-            const [year, month, day] = value.split("-").map(Number);
-            return new Date(year, month - 1, day);
+            const cleanValue = String(value).trim();
+
+            // ISO format: YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(cleanValue)) {
+                const [year, month, day] = cleanValue.split("-").map(Number);
+                return new Date(year, month - 1, day);
+            }
+
+            // UK format: DD/MM/YYYY
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(cleanValue)) {
+                const [day, month, year] = cleanValue.split("/").map(Number);
+                return new Date(year, month - 1, day);
+            }
+
+            return null;
         }
 
         function formatDateForInput(dateValue) {
@@ -707,6 +718,9 @@ ${csvLine}`;
                 buildCurrentVehicles();
                 populateCentres(centreRows);
 
+                document.getElementById("baseSelect").value = "All Bases";
+                document.getElementById("vehicleSearch").disabled = false;
+
                 status.textContent = "";
 
             } catch (error) {
@@ -729,7 +743,7 @@ ${csvLine}`;
                 clearVehicleSelection();
 
                 vehicleSearch.value = "";
-                vehicleSearch.disabled = !event.target.value;
+                vehicleSearch.disabled = false;
 
                 document.getElementById("vehicleResults").style.display =
                     "none";
