@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>FleetHub</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Free CSV reader -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
+
+    <style>
+        :root {
+            --background: #1f2328;
+            --panel: #2b3138;
+            --border: #59616a;
+            --text: #f5f7fa;
+            --muted: #c5cad0;
+            --overdue: #ff5c64;
+            --upcoming: #ffc21c;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+        }
+
+        .app-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.08rem;
+            margin: 28px 0 10px;
+            text-transform: uppercase;
+        }
+
+        .form-select {
+            min-height: 48px;
+            font-size: 1.05rem;
+        }
+
+        .checks-table {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 18px;
+        }
+
+        .checks-header,
+        .checks-row {
+            display: grid;
+            grid-template-columns: minmax(120px, 1.3fr) 1fr 1fr;
+        }
+
+        .checks-header {
+            background: #252a30;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .checks-row {
+            background: var(--panel);
+            border-top: 1px solid var(--border);
+            min-height: 76px;
+        }
+
+        .checks-header > div,
+        .checks-row > div {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .checks-header > div + div,
+        .checks-row > div + div {
+            border-left: 1px solid var(--border);
+        }
+
+        .check-name {
+            font-size: 1rem;
+            font-weight: 600;
+            justify-content: flex-start !important;
+            padding-left: 16px !important;
+        }
+
+        .count {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .count-overdue {
+            color: var(--overdue);
+        }
+
+        .count-upcoming {
+            color: var(--upcoming);
+        }
+
+        .placeholder-count {
+            color: #9ca3aa;
+            font-size: 1.35rem;
+            font-weight: 600;
+        }
+
+        .status-message {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+
+        .error {
+            color: var(--overdue);
+        }
+
+        @media (max-width: 520px) {
+            .app-container {
+                padding: 22px 12px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .checks-header,
+            .checks-row {
+                grid-template-columns: 1.15fr 0.9fr 0.9fr;
+            }
+
+            .checks-header > div,
+            .checks-row > div {
+                padding: 10px 5px;
+            }
+
+            .check-name {
+                font-size: 0.9rem;
+                padding-left: 10px !important;
+            }
+
+            .count {
+                font-size: 1.65rem;
+            }
+
+            .checks-header {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="app-container">
+        <h1 class="title">FleetHub</h1>
+
+        <select id="baseSelector" class="form-select" aria-label="Select base">
+            <option value="All Bases">All Bases</option>
+            <option value="Canvey">Canvey</option>
+            <option value="Chelmsford">Chelmsford</option>
+            <option value="Southend">Southend</option>
+        </select>
+
+        <div class="section-title">Vehicle checks</div>
+
+        <section class="checks-table">
+            <div class="checks-header">
+                <div>Check</div>
+                <div>Overdue</div>
+                <div>Upcoming</div>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-name">MOT</div>
+                <div id="motOverdue" class="count count-overdue">--</div>
+                <div id="motUpcoming" class="count count-upcoming">--</div>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-name">Service</div>
+                <div class="placeholder-count">—</div>
+                <div class="placeholder-count">—</div>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-name">Clean</div>
+                <div class="placeholder-count">TBC</div>
+                <div class="placeholder-count">TBC</div>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-name">Oxygen</div>
+                <div class="placeholder-count">TBC</div>
+                <div class="placeholder-count">TBC</div>
+            </div>
+
+            <div class="checks-row">
+                <div class="check-name">Extinguishers</div>
+                <div class="placeholder-count">TBC</div>
+                <div class="placeholder-count">TBC</div>
+            </div>
+        </section>
+
+        <div id="statusMessage" class="status-message">
+            Loading fleet data…
+        </div>
+    </main>
+
+    <script>
+        /*
+         * Fixed date for the August 2026 demonstration.
+         * Later, replace this with:
+         * const DEMO_DATE = new Date();
+         */
+        const DEMO_DATE = parseDate("2026-08-20");
+        const UPCOMING_DAYS = 30;
+
+        let vehicles = [];
+        let baseLocations = [];
+        let motHistory = [];
+
+        function parseDate(value) {
+            if (!value) return null;
+
+            const parts = value.split("-").map(Number);
+
+            return new Date(
+                parts[0],
+                parts[1] - 1,
+                parts[2]
+            );
+        }
+
+        function daysBetween(fromDate, toDate) {
+            const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+            const from = new Date(
+                fromDate.getFullYear(),
+                fromDate.getMonth(),
+                fromDate.getDate()
+            );
+
+            const to = new Date(
+                toDate.getFullYear(),
+                toDate.getMonth(),
+                toDate.getDate()
+            );
+
+            return Math.round((to - from) / millisecondsPerDay);
+        }
+
+        function loadCsv(filename) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(filename, {
+                    download: true,
+                    header: true,
+                    skipEmptyLines: true,
+
+                    complete(results) {
+                        if (results.errors.length > 0) {
+                            reject(results.errors);
+                            return;
+                        }
+
+                        resolve(results.data);
+                    },
+
+                    error(error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        function getLatestRecord(rows, registration, dateField) {
+            return rows
+                .filter(row => row.Registration === registration)
+                .sort((a, b) =>
+                    parseDate(b[dateField]) - parseDate(a[dateField])
+                )[0] || null;
+        }
+
+        function buildCurrentVehicleData() {
+            return vehicles
+                .filter(vehicle => vehicle.Active === "Yes")
+                .map(vehicle => {
+                    const baseRecord = getLatestRecord(
+                        baseLocations,
+                        vehicle.Registration,
+                        "EffectiveFrom"
+                    );
+
+                    const motRecord = getLatestRecord(
+                        motHistory,
+                        vehicle.Registration,
+                        "TestDate"
+                    );
+
+                    return {
+                        ...vehicle,
+                        BaseLocation: baseRecord?.BaseLocation || "Unknown",
+                        MotExpiry: motRecord?.ExpiryDate || "",
+                        LatestMot: motRecord
+                    };
+                });
+        }
+
+        function calculateMotCounts(selectedBase) {
+            const currentVehicles = buildCurrentVehicleData();
+
+            const filteredVehicles = currentVehicles.filter(vehicle =>
+                selectedBase === "All Bases" ||
+                vehicle.BaseLocation === selectedBase
+            );
+
+            let overdue = 0;
+            let upcoming = 0;
+
+            filteredVehicles.forEach(vehicle => {
+                const expiryDate = parseDate(vehicle.MotExpiry);
+
+                if (!expiryDate) return;
+
+                const daysRemaining = daysBetween(DEMO_DATE, expiryDate);
+
+                if (daysRemaining < 0) {
+                    overdue++;
+                } else if (daysRemaining <= UPCOMING_DAYS) {
+                    upcoming++;
+                }
+            });
+
+            return { overdue, upcoming };
+        }
+
+        function updateDashboard() {
+            const selectedBase =
+                document.getElementById("baseSelector").value;
+
+            const counts = calculateMotCounts(selectedBase);
+
+            document.getElementById("motOverdue").textContent =
+                counts.overdue;
+
+            document.getElementById("motUpcoming").textContent =
+                counts.upcoming;
+
+            document.getElementById("statusMessage").textContent =
+                `Showing MOT exceptions for ${selectedBase}. ` +
+                `Upcoming means due in the next ${UPCOMING_DAYS} days.`;
+        }
+
+        async function initialise() {
+            const status = document.getElementById("statusMessage");
+
+            try {
+                [
+                    vehicles,
+                    baseLocations,
+                    motHistory
+                ] = await Promise.all([
+                    loadCsv("data_Vehicles.csv"),
+                    loadCsv("data_BaseLocationLog.csv"),
+                    loadCsv("data_MotLog.csv")
+                ]);
+
+                updateDashboard();
+
+                document
+                    .getElementById("baseSelector")
+                    .addEventListener("change", updateDashboard);
+
+            } catch (error) {
+                console.error(error);
+
+                status.textContent =
+                    "FleetHub could not load one or more data files.";
+
+                status.classList.add("error");
+            }
+        }
+
+        initialise();
+    </script>
+</body>
+</html>
