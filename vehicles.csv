@@ -1,0 +1,201 @@
+﻿Registration,FleetNumber,Make,Model,VehicleClass,YearFirstRegistered,FuelType,Active
+AMB101,FLT001,Renault,Master,Wheelchair Vehicle,2021,Diesel,Yes
+AMB102,FLT002,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB103,FLT003,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB104,FLT004,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB105,FLT005,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB106,FLT006,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB107,FLT007,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB108,FLT008,Ford,Transit,Patient Transport Ambulance,2018,Diesel,Yes
+AMB109,FLT009,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB110,FLT010,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2018,Diesel,Yes
+AMB111,FLT011,Ford,Transit,Patient Transport Ambulance,2022,Diesel,Yes
+AMB112,FLT012,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2018,Diesel,Yes
+AMB113,FLT013,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2022,Diesel,Yes
+AMB114,FLT014,Renault,Master,High Dependency Ambulance,2023,Diesel,Yes
+AMB115,FLT015,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB116,FLT016,Renault,Master,Patient Transport Ambulance,2018,Diesel,Yes
+AMB117,FLT017,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2021,Diesel,Yes
+AMB118,FLT018,Renault,Master,Patient Transport Ambulance,2025,Diesel,Yes
+AMB119,FLT019,Ford,Transit,High Dependency Ambulance,2022,Diesel,Yes
+AMB120,FLT020,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB121,FLT021,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB122,FLT022,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB123,FLT023,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB124,FLT024,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB125,FLT025,Ford,Transit,Patient Transport Ambulance,2020,Diesel,Yes
+AMB126,FLT026,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2023,Diesel,Yes
+AMB127,FLT027,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB128,FLT028,Ford,Transit,Patient Transport Ambulance,2019,Diesel,Yes
+AMB129,FLT029,Mercedes-Benz,Sprinter,High Dependency Ambulance,2022,Diesel,Yes
+AMB130,FLT030,Ford,Transit,Patient Transport Ambulance,2022,Diesel,Yes
+AMB131,FLT031,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB132,FLT032,Ford,Transit,Patient Transport Ambulance,2025,Diesel,Yes
+AMB133,FLT033,Ford,Transit,Patient Transport Ambulance,2021,Diesel,Yes
+AMB134,FLT034,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB135,FLT035,Renault,Master,Wheelchair Vehicle,2022,Diesel,Yes
+AMB136,FLT036,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB137,FLT037,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB138,FLT038,Renault,Master,Wheelchair Vehicle,2023,Diesel,Yes
+AMB139,FLT039,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB140,FLT040,Renault,Master,Wheelchair Vehicle,2025,Diesel,Yes
+AMB141,FLT041,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2020,Diesel,Yes
+AMB142,FLT042,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB143,FLT043,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB144,FLT044,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB145,FLT045,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB146,FLT046,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB147,FLT047,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB148,FLT048,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB149,FLT049,Ford,Transit,Patient Transport Ambulance,2023,Diesel,Yes
+AMB150,FLT050,Ford,Transit,Patient Transport Ambulance,2024,Diesel,Yes
+AMB151,FLT051,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB152,FLT052,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB153,FLT053,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2020,Diesel,Yes
+AMB154,FLT054,Ford,Transit,Patient Transport Ambulance,2022,Diesel,Yes
+AMB155,FLT055,Ford,Transit,Wheelchair Vehicle,2024,Diesel,Yes
+AMB156,FLT056,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB157,FLT057,Renault,Master,Wheelchair Vehicle,2024,Diesel,Yes
+AMB158,FLT058,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB159,FLT059,Mercedes-Benz,Sprinter,High Dependency Ambulance,2018,Diesel,Yes
+AMB160,FLT060,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2022,Diesel,Yes
+AMB161,FLT061,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB162,FLT062,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB163,FLT063,Ford,Transit,Patient Transport Ambulance,2024,Diesel,Yes
+AMB164,FLT064,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB165,FLT065,Renault,Master,Wheelchair Vehicle,2023,Diesel,Yes
+AMB166,FLT066,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB167,FLT067,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB168,FLT068,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB169,FLT069,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB170,FLT070,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB171,FLT071,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2018,Diesel,Yes
+AMB172,FLT072,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB173,FLT073,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2019,Diesel,Yes
+AMB174,FLT074,Renault,Master,Patient Transport Ambulance,2025,Diesel,Yes
+AMB175,FLT075,Renault,Master,Patient Transport Ambulance,2025,Diesel,Yes
+AMB176,FLT076,Mercedes-Benz,Sprinter,High Dependency Ambulance,2022,Diesel,Yes
+AMB177,FLT077,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB178,FLT078,Renault,Master,Wheelchair Vehicle,2023,Diesel,Yes
+AMB179,FLT079,Renault,Master,Wheelchair Vehicle,2019,Diesel,Yes
+AMB180,FLT080,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB181,FLT081,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB182,FLT082,Ford,Transit,Patient Transport Ambulance,2022,Diesel,Yes
+AMB183,FLT083,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB184,FLT084,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB185,FLT085,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB186,FLT086,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB187,FLT087,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB188,FLT088,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB189,FLT089,Ford,Transit,Patient Transport Ambulance,2019,Diesel,Yes
+AMB190,FLT090,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB191,FLT091,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB192,FLT092,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB193,FLT093,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB194,FLT094,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB195,FLT095,Renault,Master,Patient Transport Ambulance,2018,Diesel,Yes
+AMB196,FLT096,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB197,FLT097,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB198,FLT098,Ford,Transit,Patient Transport Ambulance,2023,Diesel,Yes
+AMB199,FLT099,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB200,FLT100,Ford,Transit,Patient Transport Ambulance,2021,Diesel,Yes
+AMB201,FLT101,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2019,Diesel,Yes
+AMB202,FLT102,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB203,FLT103,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB204,FLT104,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB205,FLT105,Ford,Transit,Patient Transport Ambulance,2023,Diesel,Yes
+AMB206,FLT106,Renault,Master,Wheelchair Vehicle,2020,Diesel,Yes
+AMB207,FLT107,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB208,FLT108,Ford,Transit,Patient Transport Ambulance,2018,Diesel,Yes
+AMB209,FLT109,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB210,FLT110,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB211,FLT111,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB212,FLT112,Renault,Master,High Dependency Ambulance,2022,Diesel,Yes
+AMB213,FLT113,Renault,Master,Patient Transport Ambulance,2019,Diesel,Yes
+AMB214,FLT114,Ford,Transit,Wheelchair Vehicle,2024,Diesel,Yes
+AMB215,FLT115,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB216,FLT116,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB217,FLT117,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB218,FLT118,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB219,FLT119,Ford,Transit,Wheelchair Vehicle,2021,Diesel,Yes
+AMB220,FLT120,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB221,FLT121,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB222,FLT122,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB223,FLT123,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB224,FLT124,Renault,Master,Patient Transport Ambulance,2019,Diesel,Yes
+AMB225,FLT125,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB226,FLT126,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB227,FLT127,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB228,FLT128,Ford,Transit,Patient Transport Ambulance,2025,Diesel,Yes
+AMB229,FLT129,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2022,Diesel,Yes
+AMB230,FLT130,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB231,FLT131,Ford,Transit,Patient Transport Ambulance,2024,Diesel,Yes
+AMB232,FLT132,Ford,Transit,Patient Transport Ambulance,2022,Diesel,Yes
+AMB233,FLT133,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB234,FLT134,Renault,Master,Wheelchair Vehicle,2024,Diesel,Yes
+AMB235,FLT135,Ford,Transit,Patient Transport Ambulance,2020,Diesel,Yes
+AMB236,FLT136,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB237,FLT137,Renault,Master,High Dependency Ambulance,2022,Diesel,Yes
+AMB238,FLT138,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2018,Diesel,Yes
+AMB239,FLT139,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2025,Diesel,Yes
+AMB240,FLT140,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB241,FLT141,Ford,Transit,Patient Transport Ambulance,2024,Diesel,Yes
+AMB242,FLT142,Ford,Transit,High Dependency Ambulance,2020,Diesel,Yes
+AMB243,FLT143,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB244,FLT144,Ford,Transit,Wheelchair Vehicle,2023,Diesel,Yes
+AMB245,FLT145,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB246,FLT146,Renault,Master,High Dependency Ambulance,2024,Diesel,Yes
+AMB247,FLT147,Renault,Master,Patient Transport Ambulance,2022,Diesel,Yes
+AMB248,FLT148,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB249,FLT149,Renault,Master,Wheelchair Vehicle,2020,Diesel,Yes
+AMB250,FLT150,Renault,Master,Patient Transport Ambulance,2021,Diesel,Yes
+AMB251,FLT151,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB252,FLT152,Ford,Transit,Patient Transport Ambulance,2023,Diesel,Yes
+AMB253,FLT153,Renault,Master,Wheelchair Vehicle,2025,Diesel,Yes
+AMB254,FLT154,Ford,Transit,Patient Transport Ambulance,2020,Diesel,Yes
+AMB255,FLT155,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB256,FLT156,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB257,FLT157,Ford,Transit,Patient Transport Ambulance,2019,Diesel,Yes
+AMB258,FLT158,Ford,Transit,Patient Transport Ambulance,2024,Diesel,Yes
+AMB259,FLT159,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB260,FLT160,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB261,FLT161,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB262,FLT162,Renault,Master,Wheelchair Vehicle,2020,Diesel,Yes
+AMB263,FLT163,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB264,FLT164,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB265,FLT165,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB266,FLT166,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2023,Diesel,Yes
+AMB267,FLT167,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2019,Diesel,Yes
+AMB268,FLT168,Ford,Transit,Wheelchair Vehicle,2025,Diesel,Yes
+AMB269,FLT169,Renault,Master,Wheelchair Vehicle,2025,Diesel,Yes
+AMB270,FLT170,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB271,FLT171,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB272,FLT172,Renault,Master,Patient Transport Ambulance,2019,Diesel,Yes
+AMB273,FLT173,Renault,Master,Patient Transport Ambulance,2025,Diesel,Yes
+AMB274,FLT174,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB275,FLT175,Renault,Master,Patient Transport Ambulance,2023,Diesel,Yes
+AMB276,FLT176,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB277,FLT177,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB278,FLT178,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2018,Diesel,Yes
+AMB279,FLT179,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2020,Diesel,Yes
+AMB280,FLT180,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB281,FLT181,Ford,Transit,Patient Transport Ambulance,2019,Diesel,Yes
+AMB282,FLT182,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB283,FLT183,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB284,FLT184,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2023,Diesel,Yes
+AMB285,FLT185,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2021,Diesel,Yes
+AMB286,FLT186,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB287,FLT187,Renault,Master,Patient Transport Ambulance,2020,Diesel,Yes
+AMB288,FLT188,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB289,FLT189,Ford,Transit,Patient Transport Ambulance,2021,Diesel,Yes
+AMB290,FLT190,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2025,Diesel,Yes
+AMB291,FLT191,Renault,Master,Patient Transport Ambulance,2024,Diesel,Yes
+AMB292,FLT192,Renault,Master,High Dependency Ambulance,2022,Diesel,Yes
+AMB293,FLT193,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2024,Diesel,Yes
+AMB294,FLT194,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2020,Diesel,Yes
+AMB295,FLT195,Renault,Master,Wheelchair Vehicle,2018,Diesel,Yes
+AMB296,FLT196,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2024,Diesel,Yes
+AMB297,FLT197,Mercedes-Benz,Sprinter,Wheelchair Vehicle,2020,Diesel,Yes
+AMB298,FLT198,Renault,Master,Wheelchair Vehicle,2023,Diesel,Yes
+AMB299,FLT199,Mercedes-Benz,Sprinter,Patient Transport Ambulance,2024,Diesel,Yes
+AMB300,FLT200,Ford,Transit,Wheelchair Vehicle,2024,Diesel,Yes
