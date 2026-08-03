@@ -391,6 +391,19 @@
                     >
                 </div>
 
+                <div class="mb-3">
+                    <label for="adminPassword" class="form-label">Admin password</label>
+
+                    <input
+                        id="adminPassword"
+                        class="form-control"
+                        type="password"
+                        placeholder="Enter admin password"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
                 <button class="btn btn-primary w-100" type="submit">
                     Review MOT record
                 </button>
@@ -1229,39 +1242,39 @@ ${csvLine}`;
             const status =
                 document.getElementById("statusMessage");
 
-            const adminPassword = "CHANGE_ME";
-
             status.className = "status-message";
-            status.textContent = "Saving MOT record...";
+            status.textContent = "Sending MOT record...";
 
             try {
-                const response = await fetch(
-                    WORKER_URL,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type":"application/json",
-                            "X-Admin-Password": adminPassword
-                        },
-                        body: JSON.stringify(record)
-                    }
-                );
+                const response = await fetch(WORKER_URL,{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "X-Admin-Password":
+                            document.getElementById("adminPassword").value
+                    },
+                    body:JSON.stringify(record)
+                });
 
                 const result = await response.json();
 
-                if (!response.ok) {
+                if(!response.ok){
                     throw new Error(result.error || "Worker error.");
                 }
 
                 status.className="status-message status-success";
-                status.textContent=result.message || "Saved successfully.";
+                status.textContent="Worker replied successfully.";
 
                 alert(JSON.stringify(result,null,2));
 
-            } catch(error) {
+            } catch(error){
+
                 console.error(error);
+
                 status.className="status-message status-error";
                 status.textContent=error.message;
+            } finally {
+                document.getElementById("adminPassword").value = "";
             }
         }
 
