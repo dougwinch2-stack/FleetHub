@@ -1227,54 +1227,35 @@ ${csvLine}`;
                 document.getElementById("statusMessage");
 
             status.className = "status-message";
+            status.textContent = "Sending MOT record...";
 
-            status.textContent =
-                "Demo mode: the record is valid, but saving is not connected yet.";
+            try {
+                const response = await fetch(WORKER_URL,{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify(record)
+                });
 
-            /*
-             * CLOUDFLARE WORKER UPDATE CODE
-             *
-             * Uncomment this when the Worker has been deployed.
-             *
-             * try {
-             *     status.textContent = "Saving MOT record…";
-             *
-             *     const response = await fetch(WORKER_URL, {
-             *         method: "POST",
-             *         headers: {
-             *             "Content-Type": "application/json"
-             *         },
-             *         body: JSON.stringify(record)
-             *     });
-             *
-             *     const result = await response.json();
-             *
-             *     if (!response.ok) {
-             *         throw new Error(
-             *             result.error ||
-             *             "The MOT record could not be saved."
-             *         );
-             *     }
-             *
-             *     status.className =
-             *         "status-message status-success";
-             *
-             *     status.textContent =
-             *         `${record.Registration} MOT saved successfully.`;
-             *
-             *     setTimeout(() => {
-             *         window.location.href = "index.html";
-             *     }, 1500);
-             *
-             * } catch (error) {
-             *     console.error(error);
-             *
-             *     status.className =
-             *         "status-message status-error";
-             *
-             *     status.textContent = error.message;
-             * }
-             */
+                const result = await response.json();
+
+                if(!response.ok){
+                    throw new Error(result.error || "Worker error.");
+                }
+
+                status.className="status-message status-success";
+                status.textContent="Worker replied successfully.";
+
+                alert(JSON.stringify(result,null,2));
+
+            } catch(error){
+
+                console.error(error);
+
+                status.className="status-message status-error";
+                status.textContent=error.message;
+            }
         }
 
         async function initialise() {
