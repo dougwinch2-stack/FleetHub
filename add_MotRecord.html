@@ -1229,33 +1229,37 @@ ${csvLine}`;
             const status =
                 document.getElementById("statusMessage");
 
+            const adminPassword = "CHANGE_ME";
+
             status.className = "status-message";
-            status.textContent = "Sending MOT record...";
+            status.textContent = "Saving MOT record...";
 
             try {
-                const response = await fetch(WORKER_URL,{
-                    method:"POST",
-                    headers:{
-                        "Content-Type":"application/json"
-                    },
-                    body:JSON.stringify(record)
-                });
+                const response = await fetch(
+                    WORKER_URL,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type":"application/json",
+                            "X-Admin-Password": adminPassword
+                        },
+                        body: JSON.stringify(record)
+                    }
+                );
 
                 const result = await response.json();
 
-                if(!response.ok){
+                if (!response.ok) {
                     throw new Error(result.error || "Worker error.");
                 }
 
                 status.className="status-message status-success";
-                status.textContent="Worker replied successfully.";
+                status.textContent=result.message || "Saved successfully.";
 
                 alert(JSON.stringify(result,null,2));
 
-            } catch(error){
-
+            } catch(error) {
                 console.error(error);
-
                 status.className="status-message status-error";
                 status.textContent=error.message;
             }
