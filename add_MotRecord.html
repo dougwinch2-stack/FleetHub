@@ -61,7 +61,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="testDate" class="form-label">Test date</label>
-                        <input id="testDate" class="form-control" type="date" required>
+                        <div class="date-input-wrapper">
+                            <input id="testDate" class="form-control" type="date" required>
+                            <span class="date-placeholder">dd/mm/yyyy</span>
+                        </div>
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -732,6 +735,15 @@
                     ${vehicle.Registration}
                 </div>
 
+                <div>Base: ${vehicle.BaseLocation}</div>
+                <div>Fleet number: ${vehicle.FleetNumber || "-"}</div>
+                <div>Make: ${vehicle.Make || "-"}</div>
+                <div>Model: ${vehicle.Model || "-"}</div>
+                <div>Class: ${vehicle.VehicleClass || "-"}</div>
+
+                <br>
+
+                <div><strong>Current MOT</strong></div>
                 <div class="mot-status-line ${motStatus.className}">
                     ${motStatus.text}
                 </div>
@@ -1370,6 +1382,18 @@ Recorded by: ${record.RecordedBy}`;
         });
 
         document
+            .getElementById("testDate")
+            .addEventListener(
+                "input",
+                () => {
+                    const wrapper=document.querySelector(".date-input-wrapper");
+                    if(wrapper){
+                        wrapper.classList.toggle("has-value",!!document.getElementById("testDate").value);
+                    }
+                }
+            );
+
+document
             .getElementById("result")
             .addEventListener(
                 "change",
