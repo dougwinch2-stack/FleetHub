@@ -80,7 +80,6 @@
         /*
          * Use the current local date for live MOT calculations.
          */
-        const TODAY = new Date();
         const UPCOMING_DAYS = 30;
 
         let vehicles = [];
@@ -213,7 +212,7 @@
                 }
 
                 const daysRemaining =
-                    daysBetween(TODAY, expiryDate);
+                    daysBetween(new Date(), expiryDate);
 
                 if (daysRemaining < 0) {
                     overdue++;
