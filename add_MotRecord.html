@@ -17,6 +17,20 @@
     >
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
+    <style>
+        .mobile-date-hint {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-date-hint {
+                display: block;
+                margin-top: 0.35rem;
+                color: var(--bs-secondary-color);
+                font-size: 0.95rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="mot-page">
@@ -61,10 +75,8 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="testDate" class="form-label">Test date</label>
-                        <div class="date-input-wrapper">
-                            <input id="testDate" class="form-control" type="date" required>
-                            <span class="date-placeholder" aria-hidden="true" style="pointer-events: none;">dd/mm/yyyy</span>
-                        </div>
+                        <input id="testDate" class="form-control" type="date" required>
+                        <div class="mobile-date-hint">dd/mm/yyyy</div>
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -1252,7 +1264,6 @@ Recorded by: ${record.RecordedBy}`;
             hideVehicleResults();
 
             document.getElementById("testDate").value = "";
-            updateTestDatePlaceholder();
 
             document.getElementById("result").value = "";
             document.getElementById("expiryDay").value = "";
@@ -1383,86 +1394,7 @@ Recorded by: ${record.RecordedBy}`;
                 );
         });
 
-        const testDateInput =
-            document.getElementById("testDate");
-
-        const testDateWrapper =
-            document.querySelector(".date-input-wrapper");
-
-        function updateTestDatePlaceholder() {
-            if (!testDateWrapper) return;
-
-            testDateWrapper.classList.toggle(
-                "has-value",
-                Boolean(testDateInput.value)
-            );
-
-            testDateWrapper.classList.toggle(
-                "has-focus",
-                document.activeElement === testDateInput
-            );
-        }
-
-        function openNativeDatePicker() {
-            testDateInput.focus();
-
-            if (typeof testDateInput.showPicker === "function") {
-                try {
-                    testDateInput.showPicker();
-                } catch (error) {
-                    /*
-                     * Some browsers restrict showPicker().
-                     * The focused native date input remains usable.
-                     */
-                }
-            }
-        }
-
-        testDateInput.addEventListener(
-            "input",
-            () => {
-                updateTestDatePlaceholder();
-                showDateWarnings();
-            }
-        );
-
-        testDateInput.addEventListener(
-            "change",
-            updateTestDatePlaceholder
-        );
-
-        testDateInput.addEventListener(
-            "focus",
-            updateTestDatePlaceholder
-        );
-
-        testDateInput.addEventListener(
-            "blur",
-            updateTestDatePlaceholder
-        );
-
-        testDateInput.addEventListener(
-            "keydown",
-            event => {
-                if (
-                    event.key === "Enter" ||
-                    event.key === " " ||
-                    event.key === "ArrowDown"
-                ) {
-                    event.preventDefault();
-                    openNativeDatePicker();
-                }
-            }
-        );
-
-        if (testDateWrapper) {
-            testDateWrapper.addEventListener(
-                "click",
-                openNativeDatePicker
-            );
-        }
-
-document
+        document
             .getElementById("result")
             .addEventListener(
                 "change",
@@ -1729,7 +1661,6 @@ document
         });
 
         populateExpiryDateDropdowns();
-        updateTestDatePlaceholder();
         initialise();
     </script>
 </body>
