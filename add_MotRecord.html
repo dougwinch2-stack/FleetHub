@@ -63,7 +63,7 @@
                         <label for="testDate" class="form-label">Test date</label>
                         <div class="date-input-wrapper">
                             <input id="testDate" class="form-control" type="date" required>
-                            <span class="date-placeholder">dd/mm/yyyy</span>
+                            <span class="date-placeholder" aria-hidden="true" style="pointer-events: none;">dd/mm/yyyy</span>
                         </div>
                     </div>
 
@@ -1252,6 +1252,8 @@ Recorded by: ${record.RecordedBy}`;
             hideVehicleResults();
 
             document.getElementById("testDate").value = "";
+            updateTestDatePlaceholder();
+
             document.getElementById("result").value = "";
             document.getElementById("expiryDay").value = "";
             document.getElementById("expiryMonth").value = "";
@@ -1381,17 +1383,84 @@ Recorded by: ${record.RecordedBy}`;
                 );
         });
 
-        document
-            .getElementById("testDate")
-            .addEventListener(
-                "input",
-                () => {
-                    const wrapper=document.querySelector(".date-input-wrapper");
-                    if(wrapper){
-                        wrapper.classList.toggle("has-value",!!document.getElementById("testDate").value);
-                    }
-                }
+        const testDateInput =
+            document.getElementById("testDate");
+
+        const testDateWrapper =
+            document.querySelector(".date-input-wrapper");
+
+        function updateTestDatePlaceholder() {
+            if (!testDateWrapper) return;
+
+            testDateWrapper.classList.toggle(
+                "has-value",
+                Boolean(testDateInput.value)
             );
+
+            testDateWrapper.classList.toggle(
+                "has-focus",
+                document.activeElement === testDateInput
+            );
+        }
+
+        function openNativeDatePicker() {
+            testDateInput.focus();
+
+            if (typeof testDateInput.showPicker === "function") {
+                try {
+                    testDateInput.showPicker();
+                } catch (error) {
+                    /*
+                     * Some browsers restrict showPicker().
+                     * The focused native date input remains usable.
+                     */
+                }
+            }
+        }
+
+        testDateInput.addEventListener(
+            "input",
+            () => {
+                updateTestDatePlaceholder();
+                showDateWarnings();
+            }
+        );
+
+        testDateInput.addEventListener(
+            "change",
+            updateTestDatePlaceholder
+        );
+
+        testDateInput.addEventListener(
+            "focus",
+            updateTestDatePlaceholder
+        );
+
+        testDateInput.addEventListener(
+            "blur",
+            updateTestDatePlaceholder
+        );
+
+        testDateInput.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key === "Enter" ||
+                    event.key === " " ||
+                    event.key === "ArrowDown"
+                ) {
+                    event.preventDefault();
+                    openNativeDatePicker();
+                }
+            }
+        );
+
+        if (testDateWrapper) {
+            testDateWrapper.addEventListener(
+                "click",
+                openNativeDatePicker
+            );
+        }
 
 document
             .getElementById("result")
@@ -1660,6 +1729,7 @@ document
         });
 
         populateExpiryDateDropdowns();
+        updateTestDatePlaceholder();
         initialise();
     </script>
 </body>
