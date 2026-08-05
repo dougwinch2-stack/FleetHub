@@ -230,6 +230,7 @@
         };
 
         const UPCOMING_DAYS = 30;
+        const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
         const WORKER_URL =
             "https://fleethub-api.dougwinch2.workers.dev/";
@@ -250,6 +251,8 @@
         let highlightedResultIndex = -1;
         let pendingMotRecord = null;
         let pendingWarnings = [];
+        let selectedMotSnapshot = null;
+        let refreshPromise = null;
 
         function loadCsv(filename, expectedHeaders) {
             return new Promise((resolve, reject) => {
@@ -374,6 +377,152 @@
 
                     return recordedAtB - recordedAtA;
                 })[0] || null;
+        }
+
+        function motRecordSnapshot(record) {
+            if (!record) return "NO_MOT_RECORD";
+
+            return [
+                record.TestDate || "",
+                record.Result || "",
+                record.ExpiryDate || "",
+                record.RecordedAt || ""
+            ].join("|");
+        }
+
+        async function refreshSourceData(showErrors = true) {
+            if (refreshPromise) {
+                return refreshPromise;
+            }
+
+            const status =
+                document.getElementById("statusMessage");
+
+            refreshPromise = (async () => {
+                try {
+                    const [
+                        vehicleRows,
+                        baseRows,
+                        motRows
+                    ] = await Promise.all([
+                        loadCsv(DATA_FILES.vehicles,["Registration","FleetNumber","Make","Model","VehicleClass","Active"]),
+                        loadCsv(DATA_FILES.bases,["Registration","BaseLocation","EffectiveFrom"]),
+                        loadCsv(DATA_FILES.mot,["Registration","TestDate","Result","ExpiryDate","Advisories","TestCentre","RecordedAt","RecordedBy"])
+                    ]);
+
+                    vehicles = vehicleRows;
+                    baseLocations = baseRows;
+                    motHistory = motRows;
+
+                    buildCurrentVehicles();
+
+                    const registration =
+                        document.getElementById("selectedRegistration").value;
+
+                    if (
+                        registration &&
+                        selectedMotSnapshot !== null &&
+                        motRecordSnapshot(getLatestMot(registration)) !==
+                            selectedMotSnapshot
+                    ) {
+                        status.className =
+                            "status-message status-error";
+
+                        status.textContent =
+                            `The MOT history for ${registration} has changed ` +
+                            `since you selected it. Re-select the vehicle ` +
+                            `before saving.`;
+                    }
+
+                    return true;
+
+                } catch (error) {
+                    console.error(
+                        "Vehicle/base/MOT data refresh error:",
+                        error
+                    );
+
+                    if (showErrors) {
+                        status.className =
+                            "status-message status-error";
+
+                        status.textContent =
+                            error.message;
+                    }
+
+                    throw error;
+
+                } finally {
+                    refreshPromise = null;
+                }
+            })();
+
+            return refreshPromise;
+        }
+
+        async function checkForMotConflict(record) {
+            await refreshSourceData(true);
+
+            const latestMot =
+                getLatestMot(record.Registration);
+
+            return (
+                motRecordSnapshot(latestMot) !==
+                selectedMotSnapshot
+            )
+                ? latestMot
+                : null;
+        }
+
+        function showMotConflict(registration, latestMot) {
+            closePasswordModal();
+
+            document.getElementById("preview").style.display =
+                "none";
+
+            document.getElementById("motForm").style.display =
+                "block";
+
+            document.getElementById("selectedRegistration").value =
+                "";
+
+            document.getElementById("selectedVehicle").style.display =
+                "none";
+
+            document.getElementById("selectedVehicle").innerHTML =
+                "";
+
+            document.getElementById("vehicleSearch").value =
+                registration;
+
+            selectedMotSnapshot = null;
+            pendingMotRecord = null;
+            pendingWarnings = [];
+
+            const status =
+                document.getElementById("statusMessage");
+
+            status.className =
+                "status-message status-error";
+
+            if (latestMot) {
+                status.textContent =
+                    `The MOT history for ${registration} changed while ` +
+                    `this form was open. The latest record is ` +
+                    `${formatDisplayDate(latestMot.TestDate)}, ` +
+                    `${latestMot.Result}` +
+                    `${latestMot.ExpiryDate
+                        ? `, expiring ${formatDisplayDate(latestMot.ExpiryDate)}`
+                        : ""}. Re-select the vehicle and review the record ` +
+                    `before trying again.`;
+            } else {
+                status.textContent =
+                    `The MOT history for ${registration} changed while ` +
+                    `this form was open. Re-select the vehicle and review ` +
+                    `the record before trying again.`;
+            }
+
+            document.getElementById("vehicleSearch").focus();
         }
 
         function getLatestBase(registration) {
@@ -504,6 +653,8 @@
         }
 
         function clearVehicleSelection() {
+            selectedMotSnapshot = null;
+
             document.getElementById("selectedRegistration").value = "";
 
             const selectedPanel =
@@ -529,6 +680,9 @@
         }
 
         function selectVehicle(vehicle) {
+            selectedMotSnapshot =
+                motRecordSnapshot(vehicle.LatestMot);
+
             document.getElementById("selectedRegistration").value =
                 vehicle.Registration;
 
@@ -1116,21 +1270,7 @@ Recorded by: ${record.RecordedBy}`;
                 document.getElementById("vehicleSearch");
 
             try {
-                const [
-                    vehicleRows,
-                    baseRows,
-                    motRows
-                ] = await Promise.all([
-                    loadCsv(DATA_FILES.vehicles,["Registration","FleetNumber","Make","Model","VehicleClass","Active"]),
-                    loadCsv(DATA_FILES.bases,["Registration","BaseLocation","EffectiveFrom"]),
-                    loadCsv(DATA_FILES.mot,["Registration","TestDate","Result","ExpiryDate","Advisories","TestCentre","RecordedAt","RecordedBy"])
-                ]);
-
-                vehicles = vehicleRows;
-                baseLocations = baseRows;
-                motHistory = motRows;
-
-                buildCurrentVehicles();
+                await refreshSourceData(true);
 
                 document.getElementById("baseSelect").value =
                     "All Bases";
@@ -1140,19 +1280,7 @@ Recorded by: ${record.RecordedBy}`;
                 status.textContent = "";
 
             } catch (error) {
-                console.error(
-                    "Vehicle/base/MOT data error:",
-                    error
-                );
-
                 vehicleSearch.disabled = true;
-
-                status.className =
-                    "status-message status-error";
-
-                status.textContent =
-                    error.message;
-
                 return;
             }
 
@@ -1180,6 +1308,20 @@ Recorded by: ${record.RecordedBy}`;
                 status.textContent =
                     error.message;
             }
+
+            setInterval(
+                () => refreshSourceData(false).catch(() => {}),
+                REFRESH_INTERVAL_MS
+            );
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+                    if (!document.hidden) {
+                        refreshSourceData(false).catch(() => {});
+                    }
+                }
+            );
         }
 
         document
@@ -1287,7 +1429,48 @@ Recorded by: ${record.RecordedBy}`;
                     "";
             });
 
-        document.getElementById("confirmButton").addEventListener("click",()=>{ if(pendingMotRecord) openPasswordModal(); });
+        document
+            .getElementById("confirmButton")
+            .addEventListener("click", async () => {
+                if (!pendingMotRecord) return;
+
+                const button =
+                    document.getElementById("confirmButton");
+
+                const status =
+                    document.getElementById("statusMessage");
+
+                button.disabled = true;
+                button.textContent = "Checking latest MOT history...";
+
+                try {
+                    const conflict =
+                        await checkForMotConflict(pendingMotRecord);
+
+                    if (conflict) {
+                        showMotConflict(
+                            pendingMotRecord.Registration,
+                            conflict
+                        );
+                        return;
+                    }
+
+                    status.textContent = "";
+                    openPasswordModal();
+
+                } catch (error) {
+                    status.className =
+                        "status-message status-error";
+
+                    status.textContent =
+                        "The latest MOT history could not be checked. " +
+                        "Nothing has been saved. Try again.";
+
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Confirm and save";
+                }
+            });
         document.getElementById("passwordCancelButton").addEventListener("click",closePasswordModal);
         document.getElementById("passwordModal").addEventListener("click",event=>{ if(event.target.id==="passwordModal") closePasswordModal(); });
         document
@@ -1317,15 +1500,29 @@ Recorded by: ${record.RecordedBy}`;
                 button.textContent = "Saving...";
 
                 try {
+                    const recordToSave =
+                        pendingMotRecord;
+
+                    const conflict =
+                        await checkForMotConflict(recordToSave);
+
+                    if (conflict) {
+                        showMotConflict(
+                            recordToSave.Registration,
+                            conflict
+                        );
+                        return;
+                    }
+
                     const result =
                         await saveMotRecord(
-                            pendingMotRecord,
+                            recordToSave,
                             password
                         );
 
                     const message =
                         result.message ||
-                        `MOT for ${pendingMotRecord.Registration} saved successfully.`;
+                        `MOT for ${recordToSave.Registration} saved successfully.`;
 
                     closePasswordModal();
                     showSuccessScreen(message);
