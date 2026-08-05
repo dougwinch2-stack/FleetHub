@@ -221,6 +221,27 @@
         </div>
     </div>
 
+    <div
+        id="motConflictModal"
+        class="modal-backdrop-custom"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="motConflictModalTitle"
+        aria-hidden="true"
+    >
+        <div class="password-modal">
+            <h2 id="motConflictModalTitle">MOT record has changed</h2>
+            <p id="motConflictMessage" style="white-space: pre-line;"></p>
+            <button
+                id="motConflictOkButton"
+                class="btn btn-primary w-100"
+                type="button"
+            >
+                OK
+            </button>
+        </div>
+    </div>
+
     <script>
         const DATA_FILES = {
             vehicles: "data_Vehicles.csv",
@@ -416,24 +437,6 @@
 
                     buildCurrentVehicles();
 
-                    const registration =
-                        document.getElementById("selectedRegistration").value;
-
-                    if (
-                        registration &&
-                        selectedMotSnapshot !== null &&
-                        motRecordSnapshot(getLatestMot(registration)) !==
-                            selectedMotSnapshot
-                    ) {
-                        status.className =
-                            "status-message status-error";
-
-                        status.textContent =
-                            `The MOT history for ${registration} has changed ` +
-                            `since you selected it. Re-select the vehicle ` +
-                            `before saving.`;
-                    }
-
                     return true;
 
                 } catch (error) {
@@ -474,9 +477,61 @@
                 : null;
         }
 
-        function showMotConflict(registration, latestMot) {
+        function openMotConflictModal(
+            registration,
+            latestMot
+        ) {
             closePasswordModal();
 
+            const modal =
+                document.getElementById("motConflictModal");
+
+            const message =
+                document.getElementById("motConflictMessage");
+
+            if (latestMot) {
+                message.textContent =
+                    `${registration} has received a newer MOT record ` +
+                    `since you selected it.\n\n` +
+                    `Latest test: ${formatDisplayDate(latestMot.TestDate)}\n` +
+                    `Result: ${latestMot.Result}\n` +
+                    `${latestMot.ExpiryDate
+                        ? `Expiry: ${formatDisplayDate(latestMot.ExpiryDate)}\n`
+                        : ""}` +
+                    `\nNothing has been saved.\n\n` +
+                    `Please re-select the vehicle and review whether ` +
+                    `another MOT record is still required.`;
+            } else {
+                message.textContent =
+                    `${registration}'s MOT history has changed since ` +
+                    `you selected it.\n\nNothing has been saved.\n\n` +
+                    `Please re-select the vehicle and review whether ` +
+                    `another MOT record is still required.`;
+            }
+
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("modal-open-custom");
+
+            setTimeout(
+                () =>
+                    document
+                        .getElementById("motConflictOkButton")
+                        .focus(),
+                0
+            );
+        }
+
+        function closeMotConflictModal() {
+            const modal =
+                document.getElementById("motConflictModal");
+
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("modal-open-custom");
+        }
+
+        function showMotConflict(registration, latestMot) {
             document.getElementById("preview").style.display =
                 "none";
 
@@ -503,26 +558,15 @@
                 document.getElementById("statusMessage");
 
             status.className =
-                "status-message status-error";
+                "status-message";
 
-            if (latestMot) {
-                status.textContent =
-                    `The MOT history for ${registration} changed while ` +
-                    `this form was open. The latest record is ` +
-                    `${formatDisplayDate(latestMot.TestDate)}, ` +
-                    `${latestMot.Result}` +
-                    `${latestMot.ExpiryDate
-                        ? `, expiring ${formatDisplayDate(latestMot.ExpiryDate)}`
-                        : ""}. Re-select the vehicle and review the record ` +
-                    `before trying again.`;
-            } else {
-                status.textContent =
-                    `The MOT history for ${registration} changed while ` +
-                    `this form was open. Re-select the vehicle and review ` +
-                    `the record before trying again.`;
-            }
+            status.textContent =
+                "";
 
-            document.getElementById("vehicleSearch").focus();
+            openMotConflictModal(
+                registration,
+                latestMot
+            );
         }
 
         function getLatestBase(registration) {
@@ -1385,7 +1429,7 @@ Recorded by: ${record.RecordedBy}`;
 
         document
             .getElementById("motForm")
-            .addEventListener("submit", event => {
+            .addEventListener("submit", async event => {
                 event.preventDefault();
 
                 const record =
@@ -1405,15 +1449,57 @@ Recorded by: ${record.RecordedBy}`;
                     return;
                 }
 
-                status.textContent = "";
+                status.className =
+                    "status-message";
 
-                pendingMotRecord = record;
-                pendingWarnings = getDateWarnings();
+                status.textContent =
+                    "Checking latest MOT history...";
 
-                showPreview(
-                    record,
-                    pendingWarnings
-                );
+                const submitButton =
+                    document.querySelector(
+                        '#motForm button[type="submit"]'
+                    );
+
+                submitButton.disabled = true;
+                submitButton.textContent =
+                    "Checking latest MOT history...";
+
+                try {
+                    const conflict =
+                        await checkForMotConflict(record);
+
+                    if (conflict) {
+                        showMotConflict(
+                            record.Registration,
+                            conflict
+                        );
+
+                        return;
+                    }
+
+                    status.textContent = "";
+
+                    pendingMotRecord = record;
+                    pendingWarnings = getDateWarnings();
+
+                    showPreview(
+                        record,
+                        pendingWarnings
+                    );
+
+                } catch (error) {
+                    status.className =
+                        "status-message status-error";
+
+                    status.textContent =
+                        "The latest MOT history could not be checked. " +
+                        "Nothing has been saved. Try again.";
+
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent =
+                        "Add new MOT record";
+                }
             });
 
         document
@@ -1473,6 +1559,27 @@ Recorded by: ${record.RecordedBy}`;
             });
         document.getElementById("passwordCancelButton").addEventListener("click",closePasswordModal);
         document.getElementById("passwordModal").addEventListener("click",event=>{ if(event.target.id==="passwordModal") closePasswordModal(); });
+        document
+            .getElementById("motConflictOkButton")
+            .addEventListener("click", () => {
+                closeMotConflictModal();
+
+                document
+                    .getElementById("vehicleSearch")
+                    .focus();
+            });
+
+        document
+            .getElementById("motConflictModal")
+            .addEventListener("click", event => {
+                if (event.target.id === "motConflictModal") {
+                    closeMotConflictModal();
+
+                    document
+                        .getElementById("vehicleSearch")
+                        .focus();
+                }
+            });
         document
             .getElementById("passwordForm")
             .addEventListener("submit", async event => {
@@ -1538,7 +1645,30 @@ Recorded by: ${record.RecordedBy}`;
                     button.textContent = "Confirm and save";
                 }
             });
-        document.addEventListener("keydown",event=>{ if(event.key==="Escape"&&document.getElementById("passwordModal").classList.contains("open")) closePasswordModal(); });
+        document.addEventListener("keydown", event => {
+            if (event.key !== "Escape") return;
+
+            if (
+                document
+                    .getElementById("passwordModal")
+                    .classList.contains("open")
+            ) {
+                closePasswordModal();
+                return;
+            }
+
+            if (
+                document
+                    .getElementById("motConflictModal")
+                    .classList.contains("open")
+            ) {
+                closeMotConflictModal();
+
+                document
+                    .getElementById("vehicleSearch")
+                    .focus();
+            }
+        });
 
         document
             .getElementById("addAnotherButton")
