@@ -32,25 +32,14 @@
             <form id="motForm">
 
                 <div class="mb-3">
-                    <label for="baseSelect" class="form-label">Base</label>
-
-                    <select id="baseSelect" class="form-select" required>
-                        <option value="All Bases" selected>All Bases</option>
-                        <option value="Canvey">Canvey</option>
-                        <option value="Chelmsford">Chelmsford</option>
-                        <option value="Southend">Southend</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="vehicleSearch" class="form-label">Vehicle</label>
+                    <label for="vehicleSearch" class="form-label">Vehicle registration</label>
 
                     <div class="vehicle-search-wrapper">
                         <input
                             id="vehicleSearch"
                             class="form-control"
                             type="search"
-                            placeholder="Type registration, fleet number, make or model (e.g. AMB142)"
+                            placeholder="Type registration or final characters (e.g. AMB142 or 142)"
                             autocomplete="off"
                             aria-autocomplete="list"
                             aria-controls="vehicleResults"
@@ -743,13 +732,6 @@
                     ${vehicle.Registration}
                 </div>
 
-                <div class="selected-meta">
-                    ${vehicle.BaseLocation}
-                    · ${vehicle.Make || ""}
-                    · ${vehicle.Model || ""}
-                    ${vehicle.VehicleClass ? `· ${vehicle.VehicleClass}` : ""}
-                </div>
-
                 <div class="mot-status-line ${motStatus.className}">
                     ${motStatus.text}
                 </div>
@@ -791,16 +773,19 @@
             }
         }
 
-        function showVehicleResults() {
-            const selectedBase =
-                document.getElementById("baseSelect").value;
+        function normaliseRegistration(value) {
+            return String(value || "")
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, "");
+        }
 
+        function showVehicleResults() {
             const searchText =
-                document
-                    .getElementById("vehicleSearch")
-                    .value
-                    .trim()
-                    .toLowerCase();
+                normaliseRegistration(
+                    document
+                        .getElementById("vehicleSearch")
+                        .value
+                );
 
             const resultsPanel =
                 document.getElementById("vehicleResults");
@@ -813,36 +798,26 @@
                 return;
             }
 
-            let filtered = currentVehicles.filter(vehicle =>
-                selectedBase === "All Bases" ||
-                vehicle.BaseLocation === selectedBase
-            );
+            let filtered = currentVehicles;
 
             if (searchText) {
-                filtered = filtered.filter(vehicle => {
-                    const searchableText = [
-                        vehicle.Registration,
-                        vehicle.FleetNumber,
-                        vehicle.Make,
-                        vehicle.Model,
-                        vehicle.VehicleClass,
-                        vehicle.BaseLocation
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .toLowerCase();
-
-                    return searchableText.includes(searchText);
-                });
+                filtered = currentVehicles.filter(vehicle =>
+                    normaliseRegistration(
+                        vehicle.Registration
+                    ).includes(searchText)
+                );
             }
 
-            visibleVehicleResults = filtered.slice(0, 30);
+            visibleVehicleResults =
+                filtered.slice(0, 30);
+
             highlightedResultIndex = -1;
             resultsPanel.innerHTML = "";
 
             if (visibleVehicleResults.length === 0) {
                 resultsPanel.innerHTML =
-                    '<div class="vehicle-result">No matching vehicles</div>';
+                    '<div class="vehicle-result">No matching registration</div>';
+
             } else {
                 visibleVehicleResults.forEach((vehicle, index) => {
                     const item =
@@ -852,16 +827,8 @@
                     item.dataset.index = index;
                     item.setAttribute("role", "option");
 
-                    item.innerHTML = `
-                        <strong>${vehicle.Registration}</strong>
-                        <br>
-                        <small>
-                            ${vehicle.BaseLocation}
-                            · ${vehicle.Make || ""}
-                            · ${vehicle.Model || ""}
-                            ${vehicle.VehicleClass ? `· ${vehicle.VehicleClass}` : ""}
-                        </small>
-                    `;
+                    item.textContent =
+                        vehicle.Registration;
 
                     item.addEventListener("mouseenter", () => {
                         setHighlightedResult(index);
@@ -1267,7 +1234,6 @@ Recorded by: ${record.RecordedBy}`;
 
             form.reset();
 
-            document.getElementById("baseSelect").value = "All Bases";
             document.getElementById("vehicleSearch").value = "";
 
             clearVehicleSelection();
@@ -1303,7 +1269,7 @@ Recorded by: ${record.RecordedBy}`;
             pendingWarnings = [];
 
             form.style.display = "block";
-            document.getElementById("baseSelect").focus();
+            document.getElementById("vehicleSearch").focus();
         }
 
         async function initialise() {
@@ -1315,9 +1281,6 @@ Recorded by: ${record.RecordedBy}`;
 
             try {
                 await refreshSourceData(true);
-
-                document.getElementById("baseSelect").value =
-                    "All Bases";
 
                 vehicleSearch.disabled = false;
 
@@ -1367,20 +1330,6 @@ Recorded by: ${record.RecordedBy}`;
                 }
             );
         }
-
-        document
-            .getElementById("baseSelect")
-            .addEventListener("change", () => {
-                const vehicleSearch =
-                    document.getElementById("vehicleSearch");
-
-                clearVehicleSelection();
-
-                vehicleSearch.value = "";
-                vehicleSearch.disabled = false;
-
-                hideVehicleResults();
-            });
 
         document
             .getElementById("vehicleSearch")
