@@ -79,25 +79,47 @@
     <script>
         /*
          * Use the current local date for live MOT calculations.
+         * Refresh dashboard data every five minutes and whenever
+         * the user returns to this browser tab.
          */
         const UPCOMING_DAYS = 30;
+        const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
         let vehicles = [];
         let baseLocations = [];
         let motHistory = [];
+        let refreshInProgress = false;
 
         function parseDate(value) {
             if (!value) return null;
-            const cleanValue=String(value).trim();
-            if(!/^\d{4}-\d{2}-\d{2}$/.test(cleanValue)) return null;
-            const [year,month,day]=cleanValue.split("-").map(Number);
-            const dateValue=new Date(year,month-1,day);
-            if(dateValue.getFullYear()!==year||dateValue.getMonth()!==month-1||dateValue.getDate()!==day) return null;
+
+            const cleanValue =
+                String(value).trim();
+
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanValue)) {
+                return null;
+            }
+
+            const [year, month, day] =
+                cleanValue.split("-").map(Number);
+
+            const dateValue =
+                new Date(year, month - 1, day);
+
+            if (
+                dateValue.getFullYear() !== year ||
+                dateValue.getMonth() !== month - 1 ||
+                dateValue.getDate() !== day
+            ) {
+                return null;
+            }
+
             return dateValue;
         }
 
         function daysBetween(fromDate, toDate) {
-            const millisecondsPerDay = 1000 * 60 * 60 * 24;
+            const millisecondsPerDay =
+                1000 * 60 * 60 * 24;
 
             const from = new Date(
                 fromDate.getFullYear(),
@@ -111,35 +133,111 @@
                 toDate.getDate()
             );
 
-            return Math.round((to - from) / millisecondsPerDay);
+            return Math.round(
+                (to - from) / millisecondsPerDay
+            );
         }
 
         function loadCsv(filename, expectedHeaders) {
-            return new Promise((resolve,reject)=>{
-                const url=`${filename}${filename.includes("?")?"&":"?"}v=${Date.now()}`;
-                Papa.parse(url,{download:true,header:true,skipEmptyLines:"greedy",
-                    complete(results){
-                        const errors=results.errors||[];
-                        if(errors.length){ const details=errors.slice(0,3).map(error=>`row ${Number(error.row??0)+2}: ${error.message}`).join("; "); reject(new Error(`${filename} could not be parsed: ${details}`)); return; }
-                        const actual=(results.meta.fields||[]).map(v=>String(v).trim());
-                        const missing=expectedHeaders.filter(h=>!actual.includes(h));
-                        if(missing.length){ reject(new Error(`${filename} is missing column(s): ${missing.join(", ")}`)); return; }
-                        resolve(results.data.map(row=>{ const cleaned={}; actual.forEach(h=>cleaned[h]=String(row[h]??"").trim()); return cleaned; }));
+            return new Promise((resolve, reject) => {
+                const url =
+                    `${filename}${filename.includes("?") ? "&" : "?"}` +
+                    `v=${Date.now()}`;
+
+                Papa.parse(url, {
+                    download: true,
+                    header: true,
+                    skipEmptyLines: "greedy",
+
+                    complete(results) {
+                        const errors =
+                            results.errors || [];
+
+                        if (errors.length) {
+                            const details =
+                                errors
+                                    .slice(0, 3)
+                                    .map(error =>
+                                        `row ${Number(error.row ?? 0) + 2}: ` +
+                                        `${error.message}`
+                                    )
+                                    .join("; ");
+
+                            reject(
+                                new Error(
+                                    `${filename} could not be parsed: ${details}`
+                                )
+                            );
+
+                            return;
+                        }
+
+                        const actual =
+                            (results.meta.fields || [])
+                                .map(value =>
+                                    String(value).trim()
+                                );
+
+                        const missing =
+                            expectedHeaders.filter(
+                                header =>
+                                    !actual.includes(header)
+                            );
+
+                        if (missing.length) {
+                            reject(
+                                new Error(
+                                    `${filename} is missing column(s): ` +
+                                    `${missing.join(", ")}`
+                                )
+                            );
+
+                            return;
+                        }
+
+                        resolve(
+                            results.data.map(row => {
+                                const cleaned = {};
+
+                                actual.forEach(header => {
+                                    cleaned[header] =
+                                        String(row[header] ?? "")
+                                            .trim();
+                                });
+
+                                return cleaned;
+                            })
+                        );
                     },
-                    error(error){ reject(new Error(`${filename} could not be downloaded: ${error.message||String(error)}`)); }
+
+                    error(error) {
+                        reject(
+                            new Error(
+                                `${filename} could not be downloaded: ` +
+                                `${error.message || String(error)}`
+                            )
+                        );
+                    }
                 });
             });
         }
 
-        function getLatestRecord(rows, registration, dateField) {
+        function getLatestRecord(
+            rows,
+            registration,
+            dateField
+        ) {
             return rows
                 .filter(row =>
                     String(row.Registration).trim() ===
                     String(registration).trim()
                 )
                 .sort((a, b) => {
-                    const dateA = parseDate(a[dateField]);
-                    const dateB = parseDate(b[dateField]);
+                    const dateA =
+                        parseDate(a[dateField]);
+
+                    const dateB =
+                        parseDate(b[dateField]);
 
                     const primaryDifference =
                         (dateB || 0) - (dateA || 0);
@@ -160,43 +258,57 @@
 
         function buildCurrentVehicleData() {
             return vehicles
-                .filter(vehicle => String(vehicle.Active).trim().toLowerCase() === "yes")
+                .filter(vehicle =>
+                    String(vehicle.Active)
+                        .trim()
+                        .toLowerCase() === "yes"
+                )
                 .map(vehicle => {
-                    const baseRecord = getLatestRecord(
-                        baseLocations,
-                        vehicle.Registration,
-                        "EffectiveFrom"
-                    );
+                    const baseRecord =
+                        getLatestRecord(
+                            baseLocations,
+                            vehicle.Registration,
+                            "EffectiveFrom"
+                        );
 
-                    const motRecord = getLatestRecord(
-                        motHistory,
-                        vehicle.Registration,
-                        "TestDate"
-                    );
+                    const motRecord =
+                        getLatestRecord(
+                            motHistory,
+                            vehicle.Registration,
+                            "TestDate"
+                        );
 
                     return {
                         ...vehicle,
-                        BaseLocation: baseRecord?.BaseLocation || "Unknown",
-                        MotExpiry: motRecord?.ExpiryDate || "",
-                        LatestMot: motRecord
+                        BaseLocation:
+                            baseRecord?.BaseLocation ||
+                            "Unknown",
+                        MotExpiry:
+                            motRecord?.ExpiryDate || "",
+                        LatestMot:
+                            motRecord
                     };
                 });
         }
 
         function calculateMotCounts(selectedBase) {
-            const currentVehicles = buildCurrentVehicleData();
+            const currentVehicles =
+                buildCurrentVehicleData();
 
-            const filteredVehicles = currentVehicles.filter(vehicle =>
-                selectedBase === "All Bases" ||
-                vehicle.BaseLocation === selectedBase
-            );
+            const filteredVehicles =
+                currentVehicles.filter(vehicle =>
+                    selectedBase === "All Bases" ||
+                    vehicle.BaseLocation === selectedBase
+                );
 
             let overdue = 0;
             let upcoming = 0;
 
             filteredVehicles.forEach(vehicle => {
                 if (
-                    String(vehicle.LatestMot?.Result || "")
+                    String(
+                        vehicle.LatestMot?.Result || ""
+                    )
                         .trim()
                         .toLowerCase() === "fail"
                 ) {
@@ -212,10 +324,14 @@
                 }
 
                 const daysRemaining =
-                    daysBetween(new Date(), expiryDate);
+                    daysBetween(
+                        new Date(),
+                        expiryDate
+                    );
 
                 if (daysRemaining < 0) {
                     overdue++;
+
                 } else if (
                     daysRemaining <= UPCOMING_DAYS
                 ) {
@@ -223,45 +339,101 @@
                 }
             });
 
-            return { overdue, upcoming };
+            return {
+                overdue,
+                upcoming
+            };
         }
 
         function updateDashboard() {
             const selectedBase =
-                document.getElementById("baseSelector").value;
-
-            const counts = calculateMotCounts(selectedBase);
-
-            document.getElementById("motOverdue").textContent =
-                counts.overdue;
-
-            document.getElementById("motUpcoming").textContent =
-                counts.upcoming;
-
-            document.getElementById("statusMessage").textContent =
-                `Showing MOT exceptions for ${selectedBase}. ` +
-                `Upcoming means due in the next ${UPCOMING_DAYS} days.`;
-        }
-
-        async function initialise() {
-            const status = document.getElementById("statusMessage");
-
-            try {
-                [
-                    vehicles,
-                    baseLocations,
-                    motHistory
-                ] = await Promise.all([
-                    loadCsv("data_Vehicles.csv",["Registration","FleetNumber","Make","Model","VehicleClass","Active"]),
-                    loadCsv("data_BaseLocationLog.csv",["Registration","BaseLocation","EffectiveFrom"]),
-                    loadCsv("data_MotLog.csv",["Registration","TestDate","Result","ExpiryDate","Advisories","TestCentre","RecordedAt","RecordedBy"])
-                ]);
-
-                updateDashboard();
-
                 document
                     .getElementById("baseSelector")
-                    .addEventListener("change", updateDashboard);
+                    .value;
+
+            const counts =
+                calculateMotCounts(selectedBase);
+
+            document
+                .getElementById("motOverdue")
+                .textContent =
+                counts.overdue;
+
+            document
+                .getElementById("motUpcoming")
+                .textContent =
+                counts.upcoming;
+
+            document
+                .getElementById("statusMessage")
+                .textContent =
+                `Showing MOT exceptions for ${selectedBase}. ` +
+                `Upcoming means due in the next ` +
+                `${UPCOMING_DAYS} days.`;
+        }
+
+        async function refreshDashboard() {
+            if (refreshInProgress) {
+                return;
+            }
+
+            const status =
+                document.getElementById("statusMessage");
+
+            refreshInProgress = true;
+
+            try {
+                const [
+                    refreshedVehicles,
+                    refreshedBaseLocations,
+                    refreshedMotHistory
+                ] = await Promise.all([
+                    loadCsv(
+                        "data_Vehicles.csv",
+                        [
+                            "Registration",
+                            "FleetNumber",
+                            "Make",
+                            "Model",
+                            "VehicleClass",
+                            "Active"
+                        ]
+                    ),
+                    loadCsv(
+                        "data_BaseLocationLog.csv",
+                        [
+                            "Registration",
+                            "BaseLocation",
+                            "EffectiveFrom"
+                        ]
+                    ),
+                    loadCsv(
+                        "data_MotLog.csv",
+                        [
+                            "Registration",
+                            "TestDate",
+                            "Result",
+                            "ExpiryDate",
+                            "Advisories",
+                            "TestCentre",
+                            "RecordedAt",
+                            "RecordedBy"
+                        ]
+                    )
+                ]);
+
+                vehicles =
+                    refreshedVehicles;
+
+                baseLocations =
+                    refreshedBaseLocations;
+
+                motHistory =
+                    refreshedMotHistory;
+
+                status.classList.remove("error");
+
+                updateDashboard();
 
             } catch (error) {
                 console.error(error);
@@ -270,7 +442,35 @@
                     error.message;
 
                 status.classList.add("error");
+
+            } finally {
+                refreshInProgress = false;
             }
+        }
+
+        function initialise() {
+            document
+                .getElementById("baseSelector")
+                .addEventListener(
+                    "change",
+                    updateDashboard
+                );
+
+            refreshDashboard();
+
+            setInterval(
+                refreshDashboard,
+                REFRESH_INTERVAL_MS
+            );
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+                    if (!document.hidden) {
+                        refreshDashboard();
+                    }
+                }
+            );
         }
 
         initialise();
