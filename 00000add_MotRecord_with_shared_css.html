@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Add new MOT record | FleetHub</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="fleethub.css"
+        rel="stylesheet"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
+</head>
+
+<body class="mot-page">
+    <main class="app-container">
+
+        <header class="page-header">
+            <a class="back-link" href="index.html" aria-label="Back to FleetHub">←</a>
+            <h1 class="page-title">Add new MOT record</h1>
+        </header>
+
+        <section class="form-panel">
+
+            <form id="motForm">
+
+                <div class="mb-3">
+                    <label for="baseSelect" class="form-label">Base</label>
+
+                    <select id="baseSelect" class="form-select" required>
+                        <option value="All Bases" selected>All Bases</option>
+                        <option value="Canvey">Canvey</option>
+                        <option value="Chelmsford">Chelmsford</option>
+                        <option value="Southend">Southend</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="vehicleSearch" class="form-label">Vehicle</label>
+
+                    <div class="vehicle-search-wrapper">
+                        <input
+                            id="vehicleSearch"
+                            class="form-control"
+                            type="search"
+                            placeholder="Type registration, fleet number, make or model (e.g. AMB142)"
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-controls="vehicleResults"
+                            aria-expanded="false"
+                        >
+
+                        <div
+                            id="vehicleResults"
+                            class="vehicle-results"
+                            role="listbox"
+                        ></div>
+                    </div>
+
+                    <input id="selectedRegistration" type="hidden">
+
+                    <div id="selectedVehicle" class="selected-vehicle"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="testDate" class="form-label">Test date</label>
+                        <input id="testDate" class="form-control" type="date" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="result" class="form-label">Result</label>
+
+                        <select id="result" class="form-select" required>
+                            <option value="">Select result</option>
+                            <option value="Pass">Pass</option>
+                            <option value="Fail">Fail</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">New expiry date</label>
+
+                    <div class="expiry-date-grid">
+                        <div class="expiry-date-part">
+                            <label for="expiryDay">Day</label>
+                            <select id="expiryDay" class="form-select">
+                                <option value="">Day</option>
+                            </select>
+                        </div>
+
+                        <div class="expiry-date-part">
+                            <label for="expiryMonth">Month</label>
+                            <select id="expiryMonth" class="form-select">
+                                <option value="">Month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+
+                        <div class="expiry-date-part">
+                            <label for="expiryYear">Year</label>
+                            <select id="expiryYear" class="form-select"></select>
+                        </div>
+                    </div>
+
+                    <div id="expiryHelp" class="guidance">
+                        Select the day and month shown on the MOT certificate. The year defaults to next year.
+                    </div>
+
+                    <div id="dateWarning" class="date-warning"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="testCentre" class="form-label">Approved MOT centre</label>
+
+                    <select id="testCentre" class="form-select" required>
+                        <option value="">Loading approved centres…</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="advisories" class="form-label">Advisories</label>
+
+                    <textarea
+                        id="advisories"
+                        class="form-control"
+                        placeholder="Enter advisories, or leave blank if none"
+                    ></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="recordedBy" class="form-label">Recorded by</label>
+
+                    <input
+                        id="recordedBy"
+                        class="form-control"
+                        type="text"
+                        value="Demo Admin"
+                        required
+                    >
+                </div>
+
+                <button class="btn btn-primary w-100" type="submit">
+                    Add new MOT record
+                </button>
+
+            </form>
+
+            <div id="preview" class="preview">
+                <h2 class="h5">MOT record to be added</h2>
+
+                <div id="previewWarning" class="preview-warning"></div>
+
+                <pre id="previewContent"></pre>
+
+                <button id="confirmButton" class="btn btn-success w-100 mt-3">
+                    Confirm and save
+                </button>
+
+                <button id="cancelButton" class="btn btn-outline-light w-100 mt-2">
+                    Go back and edit
+                </button>
+            </div>
+
+
+            <div id="successPanel" class="success-panel">
+                <h2>✓ MOT saved successfully</h2>
+                <p id="successMessage"></p>
+
+                <button
+                    id="addAnotherButton"
+                    class="btn btn-primary w-100"
+                    type="button"
+                >
+                    Add another MOT
+                </button>
+
+                <a
+                    class="btn btn-outline-light w-100 mt-2"
+                    href="index.html"
+                >
+                    Return to dashboard
+                </a>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+        </section>
+    </main>
+
+    <div id="passwordModal" class="modal-backdrop-custom" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" aria-hidden="true">
+        <div class="password-modal">
+            <h2 id="passwordModalTitle">Confirm MOT record</h2>
+            <p>Enter the FleetHub admin password to save this MOT record.</p>
+            <form id="passwordForm">
+                <label for="modalAdminPassword" class="form-label">Admin password</label>
+                <input id="modalAdminPassword" class="form-control" type="password" autocomplete="current-password" required>
+                <div id="passwordModalError" class="modal-error"></div>
+                <button id="passwordSaveButton" class="btn btn-success w-100 mt-3" type="submit">Confirm and save</button>
+                <button id="passwordCancelButton" class="btn btn-outline-light w-100 mt-2" type="button">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const DATA_FILES = {
+            vehicles: "data_Vehicles.csv",
+            bases: "data_BaseLocationLog.csv",
+            mot: "data_MotLog.csv",
+            centres: "data_MotCentreLog.csv"
+        };
+
+        const UPCOMING_DAYS = 30;
+
+        const WORKER_URL =
+            "https://fleethub-api.dougwinch2.workers.dev/";
+
+        /*
+         * Add the Cloudflare Worker address later.
+         *
+         * Example:
+         * const WORKER_URL =
+         *     "https://fleethub-api.your-account.workers.dev/add-mot";
+         */
+
+        let vehicles = [];
+        let baseLocations = [];
+        let motHistory = [];
+        let currentVehicles = [];
+        let visibleVehicleResults = [];
+        let highlightedResultIndex = -1;
+        let pendingMotRecord = null;
+        let pendingWarnings = [];
+
+        function loadCsv(filename, expectedHeaders) {
+            return new Promise((resolve, reject) => {
+                const url = `${filename}${filename.includes("?") ? "&" : "?"}v=${Date.now()}`;
+                Papa.parse(url, {
+                    download: true, header: true, skipEmptyLines: "greedy",
+                    complete(results) {
+                        const errors = results.errors || [];
+                        if (errors.length) {
+                            const details = errors.slice(0,3).map(error => `row ${Number(error.row ?? 0)+2}: ${error.message}`).join("; ");
+                            reject(new Error(`${filename} could not be parsed: ${details}`)); return;
+                        }
+                        const actualHeaders=(results.meta.fields||[]).map(v=>String(v).trim());
+                        const missing=expectedHeaders.filter(h=>!actualHeaders.includes(h));
+                        if (missing.length) { reject(new Error(`${filename} is missing column(s): ${missing.join(", ")}`)); return; }
+                        resolve(results.data.map(row=>{ const cleaned={}; actualHeaders.forEach(h=>cleaned[h]=String(row[h]??"").trim()); return cleaned; }));
+                    },
+                    error(error) { reject(new Error(`${filename} could not be downloaded: ${error.message || String(error)}`)); }
+                });
+            });
+        }
+
+        function parseDate(value) {
+            if (!value) return null;
+
+            const cleanValue =
+                String(value).trim();
+
+            let year;
+            let month;
+            let day;
+
+            if (/^\d{4}-\d{2}-\d{2}$/.test(cleanValue)) {
+                [year, month, day] =
+                    cleanValue.split("-").map(Number);
+
+            } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(cleanValue)) {
+                [day, month, year] =
+                    cleanValue.split("/").map(Number);
+
+            } else {
+                return null;
+            }
+
+            const dateValue =
+                new Date(year, month - 1, day);
+
+            if (
+                dateValue.getFullYear() !== year ||
+                dateValue.getMonth() !== month - 1 ||
+                dateValue.getDate() !== day
+            ) {
+                return null;
+            }
+
+            return dateValue;
+        }
+
+        function formatDisplayDate(value) {
+            const dateValue =
+                value instanceof Date ? value : parseDate(value);
+
+            if (!dateValue) return "Not recorded";
+
+            return new Intl.DateTimeFormat("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            }).format(dateValue);
+        }
+
+        function startOfDay(dateValue) {
+            return new Date(
+                dateValue.getFullYear(),
+                dateValue.getMonth(),
+                dateValue.getDate()
+            );
+        }
+
+        function daysBetween(fromDate, toDate) {
+            const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+            return Math.round(
+                (
+                    startOfDay(toDate) -
+                    startOfDay(fromDate)
+                ) / millisecondsPerDay
+            );
+        }
+
+        function addMonths(dateValue, months) {
+            const result = new Date(dateValue);
+            result.setMonth(result.getMonth() + months);
+            return result;
+        }
+
+        function getLatestRecord(rows, registration, dateField) {
+            return rows
+                .filter(row =>
+                    String(row.Registration).trim() ===
+                    String(registration).trim()
+                )
+                .sort((a, b) => {
+                    const dateA =
+                        parseDate(a[dateField]);
+
+                    const dateB =
+                        parseDate(b[dateField]);
+
+                    const primaryDifference =
+                        (dateB || 0) - (dateA || 0);
+
+                    if (primaryDifference !== 0) {
+                        return primaryDifference;
+                    }
+
+                    const recordedAtA =
+                        Date.parse(a.RecordedAt || "") || 0;
+
+                    const recordedAtB =
+                        Date.parse(b.RecordedAt || "") || 0;
+
+                    return recordedAtB - recordedAtA;
+                })[0] || null;
+        }
+
+        function getLatestBase(registration) {
+            return getLatestRecord(
+                baseLocations,
+                registration,
+                "EffectiveFrom"
+            );
+        }
+
+        function getLatestMot(registration) {
+            return getLatestRecord(
+                motHistory,
+                registration,
+                "TestDate"
+            );
+        }
+
+        function buildCurrentVehicles() {
+            currentVehicles = vehicles
+                .filter(vehicle =>
+                    String(vehicle.Active).trim().toLowerCase() === "yes"
+                )
+                .map(vehicle => {
+                    const base = getLatestBase(vehicle.Registration);
+                    const latestMot = getLatestMot(vehicle.Registration);
+
+                    return {
+                        ...vehicle,
+                        BaseLocation: base?.BaseLocation || "Unknown",
+                        LatestMot: latestMot,
+                        MotExpiry: latestMot?.ExpiryDate || ""
+                    };
+                })
+                .sort((a, b) =>
+                    a.Registration.localeCompare(b.Registration)
+                );
+        }
+
+        function getActiveCentres(centreRows) {
+            const today = startOfDay(new Date());
+
+            return centreRows.filter(centre => {
+                const activeDate = parseDate(centre.ActiveDate);
+                const inactiveDate = parseDate(centre.InactiveDate);
+
+                return (
+                    activeDate &&
+                    activeDate <= today &&
+                    (!inactiveDate || inactiveDate >= today)
+                );
+            });
+        }
+
+        function populateCentres(centreRows) {
+            const centreSelect =
+                document.getElementById("testCentre");
+
+            const activeCentres =
+                getActiveCentres(centreRows);
+
+            centreSelect.innerHTML =
+                '<option value="">Select approved centre</option>';
+
+            activeCentres
+                .sort((a, b) =>
+                    a.Name.localeCompare(b.Name)
+                )
+                .forEach(centre => {
+                    const option =
+                        document.createElement("option");
+
+                    option.value = centre.Name;
+
+                    option.textContent =
+                        centre.Location
+                            ? `${centre.Name} — ${centre.Location}`
+                            : centre.Name;
+
+                    centreSelect.appendChild(option);
+                });
+        }
+
+        function getMotStatus(vehicle) {
+            const expiryDate = parseDate(vehicle.MotExpiry);
+
+            if (!vehicle.LatestMot || !expiryDate) {
+                return {
+                    className: "status-unknown",
+                    text: "Current MOT status unavailable"
+                };
+            }
+
+            if (vehicle.LatestMot.Result === "Fail") {
+                return {
+                    className: "status-overdue",
+                    text: `Latest MOT failed on ${formatDisplayDate(vehicle.LatestMot.TestDate)}`
+                };
+            }
+
+            const daysRemaining =
+                daysBetween(new Date(), expiryDate);
+
+            if (daysRemaining < 0) {
+                const daysOverdue = Math.abs(daysRemaining);
+
+                return {
+                    className: "status-overdue",
+                    text:
+                        `MOT expired ${formatDisplayDate(expiryDate)} ` +
+                        `— ${daysOverdue} day${daysOverdue === 1 ? "" : "s"} overdue`
+                };
+            }
+
+            if (daysRemaining <= UPCOMING_DAYS) {
+                return {
+                    className: "status-upcoming",
+                    text:
+                        `MOT expires ${formatDisplayDate(expiryDate)} ` +
+                        `— ${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining`
+                };
+            }
+
+            return {
+                className: "status-current",
+                text: `MOT expires ${formatDisplayDate(expiryDate)}`
+            };
+        }
+
+        function clearVehicleSelection() {
+            document.getElementById("selectedRegistration").value = "";
+
+            const selectedPanel =
+                document.getElementById("selectedVehicle");
+
+            selectedPanel.style.display = "none";
+            selectedPanel.innerHTML = "";
+        }
+
+        function hideVehicleResults() {
+            const resultsPanel =
+                document.getElementById("vehicleResults");
+
+            resultsPanel.style.display = "none";
+            resultsPanel.innerHTML = "";
+
+            document
+                .getElementById("vehicleSearch")
+                .setAttribute("aria-expanded", "false");
+
+            visibleVehicleResults = [];
+            highlightedResultIndex = -1;
+        }
+
+        function selectVehicle(vehicle) {
+            document.getElementById("selectedRegistration").value =
+                vehicle.Registration;
+
+            document.getElementById("vehicleSearch").value =
+                vehicle.Registration;
+
+            const motStatus = getMotStatus(vehicle);
+
+            const selectedPanel =
+                document.getElementById("selectedVehicle");
+
+            selectedPanel.innerHTML = `
+                <div class="selected-registration">
+                    ${vehicle.Registration}
+                </div>
+
+                <div class="selected-meta">
+                    ${vehicle.BaseLocation}
+                    · ${vehicle.Make || ""}
+                    · ${vehicle.Model || ""}
+                    ${vehicle.VehicleClass ? `· ${vehicle.VehicleClass}` : ""}
+                </div>
+
+                <div class="mot-status-line ${motStatus.className}">
+                    ${motStatus.text}
+                </div>
+            `;
+
+            selectedPanel.style.display = "block";
+
+            hideVehicleResults();
+        }
+
+        function setHighlightedResult(index) {
+            const items =
+                document.querySelectorAll(".vehicle-result[data-index]");
+
+            items.forEach(item =>
+                item.classList.remove("active")
+            );
+
+            if (
+                index < 0 ||
+                index >= visibleVehicleResults.length
+            ) {
+                highlightedResultIndex = -1;
+                return;
+            }
+
+            highlightedResultIndex = index;
+
+            const activeItem =
+                document.querySelector(
+                    `.vehicle-result[data-index="${index}"]`
+                );
+
+            if (activeItem) {
+                activeItem.classList.add("active");
+                activeItem.scrollIntoView({
+                    block: "nearest"
+                });
+            }
+        }
+
+        function showVehicleResults() {
+            const selectedBase =
+                document.getElementById("baseSelect").value;
+
+            const searchText =
+                document
+                    .getElementById("vehicleSearch")
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+            const resultsPanel =
+                document.getElementById("vehicleResults");
+
+            if (currentVehicles.length === 0) {
+                resultsPanel.innerHTML =
+                    '<div class="vehicle-result">Vehicle data is still loading</div>';
+
+                resultsPanel.style.display = "block";
+                return;
+            }
+
+            let filtered = currentVehicles.filter(vehicle =>
+                selectedBase === "All Bases" ||
+                vehicle.BaseLocation === selectedBase
+            );
+
+            if (searchText) {
+                filtered = filtered.filter(vehicle => {
+                    const searchableText = [
+                        vehicle.Registration,
+                        vehicle.FleetNumber,
+                        vehicle.Make,
+                        vehicle.Model,
+                        vehicle.VehicleClass,
+                        vehicle.BaseLocation
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
+
+                    return searchableText.includes(searchText);
+                });
+            }
+
+            visibleVehicleResults = filtered.slice(0, 30);
+            highlightedResultIndex = -1;
+            resultsPanel.innerHTML = "";
+
+            if (visibleVehicleResults.length === 0) {
+                resultsPanel.innerHTML =
+                    '<div class="vehicle-result">No matching vehicles</div>';
+            } else {
+                visibleVehicleResults.forEach((vehicle, index) => {
+                    const item =
+                        document.createElement("div");
+
+                    item.className = "vehicle-result";
+                    item.dataset.index = index;
+                    item.setAttribute("role", "option");
+
+                    item.innerHTML = `
+                        <strong>${vehicle.Registration}</strong>
+                        <br>
+                        <small>
+                            ${vehicle.BaseLocation}
+                            · ${vehicle.Make || ""}
+                            · ${vehicle.Model || ""}
+                            ${vehicle.VehicleClass ? `· ${vehicle.VehicleClass}` : ""}
+                        </small>
+                    `;
+
+                    item.addEventListener("mouseenter", () => {
+                        setHighlightedResult(index);
+                    });
+
+                    item.addEventListener("click", () => {
+                        selectVehicle(vehicle);
+                    });
+
+                    resultsPanel.appendChild(item);
+                });
+            }
+
+            resultsPanel.style.display = "block";
+
+            document
+                .getElementById("vehicleSearch")
+                .setAttribute("aria-expanded", "true");
+        }
+
+        function handleVehicleSearchKeydown(event) {
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+
+                if (
+                    document.getElementById("vehicleResults").style.display !==
+                    "block"
+                ) {
+                    showVehicleResults();
+                }
+
+                const nextIndex =
+                    Math.min(
+                        highlightedResultIndex + 1,
+                        visibleVehicleResults.length - 1
+                    );
+
+                setHighlightedResult(nextIndex);
+                return;
+            }
+
+            if (event.key === "ArrowUp") {
+                event.preventDefault();
+
+                const previousIndex =
+                    Math.max(highlightedResultIndex - 1, 0);
+
+                setHighlightedResult(previousIndex);
+                return;
+            }
+
+            if (event.key === "Enter") {
+                if (visibleVehicleResults.length === 0) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                if (highlightedResultIndex >= 0) {
+                    selectVehicle(
+                        visibleVehicleResults[highlightedResultIndex]
+                    );
+                    return;
+                }
+
+                if (visibleVehicleResults.length === 1) {
+                    selectVehicle(visibleVehicleResults[0]);
+                }
+
+                return;
+            }
+
+            if (event.key === "Escape") {
+                hideVehicleResults();
+            }
+        }
+
+        function populateExpiryDateDropdowns() {
+            const daySelect =
+                document.getElementById("expiryDay");
+
+            for (let day = 1; day <= 31; day++) {
+                const option =
+                    document.createElement("option");
+
+                option.value = String(day);
+                option.textContent = String(day);
+                daySelect.appendChild(option);
+            }
+
+            const yearSelect =
+                document.getElementById("expiryYear");
+
+            const currentYear =
+                new Date().getFullYear();
+
+            const defaultYear =
+                currentYear + 1;
+
+            for (
+                let year = currentYear + 1;
+                year <= currentYear + 5;
+                year++
+            ) {
+                const option =
+                    document.createElement("option");
+
+                option.value = String(year);
+                option.textContent = String(year);
+                option.selected = year === defaultYear;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        function clearExpiryDate() {
+            document.getElementById("expiryDay").value = "";
+            document.getElementById("expiryMonth").value = "";
+        }
+
+        function setExpiryDateDisabled(disabled) {
+            document.getElementById("expiryDay").disabled = disabled;
+            document.getElementById("expiryMonth").disabled = disabled;
+            document.getElementById("expiryYear").disabled = disabled;
+        }
+
+        function getExpiryDateValue() {
+            const dayValue =
+                document.getElementById("expiryDay").value;
+
+            const monthValue =
+                document.getElementById("expiryMonth").value;
+
+            const yearValue =
+                document.getElementById("expiryYear").value;
+
+            if (!dayValue || !monthValue || !yearValue) {
+                return "";
+            }
+
+            const day = Number(dayValue);
+            const month = Number(monthValue);
+            const year = Number(yearValue);
+
+            const dateValue =
+                new Date(year, month - 1, day);
+
+            if (
+                dateValue.getFullYear() !== year ||
+                dateValue.getMonth() !== month - 1 ||
+                dateValue.getDate() !== day
+            ) {
+                return "INVALID";
+            }
+
+            return (
+                String(year).padStart(4, "0") +
+                "-" +
+                String(month).padStart(2, "0") +
+                "-" +
+                String(day).padStart(2, "0")
+            );
+        }
+
+        function updateExpiryFieldState() {
+            const result =
+                document.getElementById("result").value;
+
+            const help =
+                document.getElementById("expiryHelp");
+
+            if (result === "Fail") {
+                clearExpiryDate();
+                setExpiryDateDisabled(true);
+
+                help.textContent =
+                    "A failed MOT does not create a new expiry date. Leave these fields blank.";
+            } else {
+                setExpiryDateDisabled(false);
+
+                help.textContent =
+                    "Select the day and month shown on the MOT certificate. The year defaults to next year.";
+            }
+
+            showDateWarnings();
+        }
+
+        function getDateWarnings() {
+            const testDate =
+                parseDate(
+                    document.getElementById("testDate").value
+                );
+
+            const expiryDateValue =
+                getExpiryDateValue();
+
+            const expiryDate =
+                expiryDateValue && expiryDateValue !== "INVALID"
+                    ? parseDate(expiryDateValue)
+                    : null;
+
+            const result =
+                document.getElementById("result").value;
+
+            const warnings = [];
+
+            if (expiryDateValue === "INVALID") {
+                warnings.push(
+                    "The selected day does not exist in the selected month and year."
+                );
+            }
+
+            if (testDate && testDate > startOfDay(new Date())) {
+                warnings.push(
+                    "The test date is in the future."
+                );
+            }
+
+            if (result === "Fail" && expiryDate) {
+                warnings.push(
+                    "A failed MOT would not normally create a new expiry date."
+                );
+            }
+
+            if (
+                result === "Pass" &&
+                testDate &&
+                expiryDate
+            ) {
+                if (expiryDate <= testDate) {
+                    warnings.push(
+                        "The new expiry date is not after the test date."
+                    );
+                }
+
+                const earliestExpected =
+                    addMonths(testDate, 11);
+
+                const latestExpected =
+                    addMonths(testDate, 13);
+
+                if (expiryDate < earliestExpected) {
+                    warnings.push(
+                        "The new expiry is less than 11 months after the test date. Check the date."
+                    );
+                }
+
+                if (expiryDate > latestExpected) {
+                    warnings.push(
+                        "The new expiry is more than 13 months after the test date. Check the date."
+                    );
+                }
+            }
+
+            return warnings;
+        }
+
+        function showDateWarnings() {
+            const warningBox =
+                document.getElementById("dateWarning");
+
+            const warnings =
+                getDateWarnings();
+
+            if (warnings.length === 0) {
+                warningBox.style.display = "none";
+                warningBox.innerHTML = "";
+                return;
+            }
+
+            warningBox.innerHTML =
+                `<strong>Please check:</strong><br>${warnings.join("<br>")}`;
+
+            warningBox.style.display = "block";
+        }
+
+        function buildMotRecord() {
+            const registration =
+                document.getElementById("selectedRegistration").value;
+
+            const result =
+                document.getElementById("result").value;
+
+            return {
+                Registration: registration,
+                TestDate:
+                    document.getElementById("testDate").value,
+
+                Result: result,
+
+                ExpiryDate:
+                    result === "Pass"
+                        ? getExpiryDateValue()
+                        : "",
+
+                Advisories:
+                    document.getElementById("advisories").value.trim(),
+
+                TestCentre:
+                    document.getElementById("testCentre").value,
+
+                RecordedAt:
+                    new Date().toISOString(),
+
+                RecordedBy:
+                    document.getElementById("recordedBy").value.trim()
+            };
+        }
+
+        function validateMotRecord(record) {
+            if (!record.Registration) {
+                return "Select a vehicle.";
+            }
+
+            if (!record.TestDate) {
+                return "Select the MOT test date.";
+            }
+
+            if (!record.Result) {
+                return "Select Pass or Fail.";
+            }
+
+            if (
+                record.Result === "Pass" &&
+                !record.ExpiryDate
+            ) {
+                return "Select the expiry day and month.";
+            }
+
+            if (
+                record.Result === "Pass" &&
+                record.ExpiryDate === "INVALID"
+            ) {
+                return "The selected expiry date is not valid.";
+            }
+
+            if (!record.TestCentre) {
+                return "Select an approved MOT centre.";
+            }
+
+            if (!record.RecordedBy) {
+                return "Enter who recorded the MOT.";
+            }
+
+            return "";
+        }
+
+        function showPreview(record, warnings) {
+            const previewWarning =
+                document.getElementById("previewWarning");
+
+            if (warnings.length > 0) {
+                previewWarning.innerHTML =
+                    `<strong>Please check before saving:</strong><br>${warnings.join("<br>")}`;
+                previewWarning.style.display = "block";
+            } else {
+                previewWarning.innerHTML = "";
+                previewWarning.style.display = "none";
+            }
+
+            document.getElementById("previewContent").textContent =
+`Registration: ${record.Registration}
+Test date: ${formatDisplayDate(record.TestDate)}
+Result: ${record.Result}
+New expiry: ${record.ExpiryDate ? formatDisplayDate(record.ExpiryDate) : "Not applicable"}
+Test centre: ${record.TestCentre}
+Advisories: ${record.Advisories || "None"}
+Recorded by: ${record.RecordedBy}`;
+
+            document.getElementById("motForm").style.display = "none";
+            document.getElementById("preview").style.display = "block";
+        }
+
+        async function saveMotRecord(record, adminPassword) {
+            const status=document.getElementById("statusMessage");
+            status.className="status-message"; status.textContent="Saving MOT record...";
+            try {
+                const response=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Admin-Password":adminPassword},body:JSON.stringify(record)});
+                let result;
+                try { result=await response.json(); } catch { throw new Error(`The FleetHub API returned an unreadable response (HTTP ${response.status}).`); }
+                if(!response.ok){ const error=new Error(result.error||`The MOT record could not be saved (HTTP ${response.status}).`); error.status=response.status; throw error; }
+                status.className="status-message status-success"; status.textContent=result.message||`${record.Registration} MOT saved successfully.`; return result;
+            } catch(error) { console.error(error); status.className="status-message status-error"; status.textContent=error.message; throw error; }
+        }
+
+        function openPasswordModal() {
+            const modal=document.getElementById("passwordModal"), input=document.getElementById("modalAdminPassword"), error=document.getElementById("passwordModalError");
+            input.value=""; error.textContent=""; error.style.display="none"; modal.classList.add("open"); modal.setAttribute("aria-hidden","false"); document.body.classList.add("modal-open-custom"); setTimeout(()=>input.focus(),0);
+        }
+        function closePasswordModal() {
+            const modal=document.getElementById("passwordModal"); document.getElementById("modalAdminPassword").value=""; document.getElementById("passwordModalError").textContent=""; modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); document.body.classList.remove("modal-open-custom");
+        }
+
+        function showSuccessScreen(message) {
+            document.getElementById("preview").style.display = "none";
+            document.getElementById("motForm").style.display = "none";
+            document.getElementById("statusMessage").textContent = "";
+            document.getElementById("successMessage").textContent = message;
+            document.getElementById("successPanel").style.display = "block";
+        }
+
+        function resetMotForm() {
+            const form = document.getElementById("motForm");
+
+            form.reset();
+
+            document.getElementById("baseSelect").value = "All Bases";
+            document.getElementById("vehicleSearch").value = "";
+
+            clearVehicleSelection();
+            hideVehicleResults();
+
+            document.getElementById("testDate").value = "";
+            document.getElementById("result").value = "";
+            document.getElementById("expiryDay").value = "";
+            document.getElementById("expiryMonth").value = "";
+            document.getElementById("expiryYear").value =
+                String(new Date().getFullYear() + 1);
+
+            setExpiryDateDisabled(false);
+
+            document.getElementById("expiryHelp").textContent =
+                "Select the day and month shown on the MOT certificate. The year defaults to next year.";
+
+            document.getElementById("testCentre").value = "";
+            document.getElementById("advisories").value = "";
+            document.getElementById("recordedBy").value = "Demo Admin";
+
+            document.getElementById("dateWarning").style.display = "none";
+            document.getElementById("dateWarning").innerHTML = "";
+            document.getElementById("previewWarning").style.display = "none";
+            document.getElementById("previewWarning").innerHTML = "";
+            document.getElementById("previewContent").textContent = "";
+            document.getElementById("preview").style.display = "none";
+            document.getElementById("successPanel").style.display = "none";
+            document.getElementById("statusMessage").className = "status-message";
+            document.getElementById("statusMessage").textContent = "";
+
+            pendingMotRecord = null;
+            pendingWarnings = [];
+
+            form.style.display = "block";
+            document.getElementById("baseSelect").focus();
+        }
+
+        async function initialise() {
+            const status =
+                document.getElementById("statusMessage");
+
+            const vehicleSearch =
+                document.getElementById("vehicleSearch");
+
+            try {
+                const [
+                    vehicleRows,
+                    baseRows,
+                    motRows
+                ] = await Promise.all([
+                    loadCsv(DATA_FILES.vehicles,["Registration","FleetNumber","Make","Model","VehicleClass","Active"]),
+                    loadCsv(DATA_FILES.bases,["Registration","BaseLocation","EffectiveFrom"]),
+                    loadCsv(DATA_FILES.mot,["Registration","TestDate","Result","ExpiryDate","Advisories","TestCentre","RecordedAt","RecordedBy"])
+                ]);
+
+                vehicles = vehicleRows;
+                baseLocations = baseRows;
+                motHistory = motRows;
+
+                buildCurrentVehicles();
+
+                document.getElementById("baseSelect").value =
+                    "All Bases";
+
+                vehicleSearch.disabled = false;
+
+                status.textContent = "";
+
+            } catch (error) {
+                console.error(
+                    "Vehicle/base/MOT data error:",
+                    error
+                );
+
+                vehicleSearch.disabled = true;
+
+                status.className =
+                    "status-message status-error";
+
+                status.textContent =
+                    error.message;
+
+                return;
+            }
+
+            try {
+                const centreRows =
+                    await loadCsv(DATA_FILES.centres,["Name","Location","ActiveDate","InactiveDate"]);
+
+                populateCentres(centreRows);
+
+            } catch (error) {
+                console.error(
+                    "MOT centre data error:",
+                    error
+                );
+
+                const centreSelect =
+                    document.getElementById("testCentre");
+
+                centreSelect.innerHTML =
+                    '<option value="">Could not load approved centres</option>';
+
+                status.className =
+                    "status-message status-error";
+
+                status.textContent =
+                    error.message;
+            }
+        }
+
+        document
+            .getElementById("baseSelect")
+            .addEventListener("change", () => {
+                const vehicleSearch =
+                    document.getElementById("vehicleSearch");
+
+                clearVehicleSelection();
+
+                vehicleSearch.value = "";
+                vehicleSearch.disabled = false;
+
+                hideVehicleResults();
+            });
+
+        document
+            .getElementById("vehicleSearch")
+            .addEventListener("input", () => {
+                clearVehicleSelection();
+                showVehicleResults();
+            });
+
+        document
+            .getElementById("vehicleSearch")
+            .addEventListener("focus", showVehicleResults);
+
+        document
+            .getElementById("vehicleSearch")
+            .addEventListener(
+                "keydown",
+                handleVehicleSearchKeydown
+            );
+
+        document
+            .getElementById("testDate")
+            .addEventListener(
+                "change",
+                showDateWarnings
+            );
+
+        [
+            "expiryDay",
+            "expiryMonth",
+            "expiryYear"
+        ].forEach(elementId => {
+            document
+                .getElementById(elementId)
+                .addEventListener(
+                    "change",
+                    showDateWarnings
+                );
+        });
+
+        document
+            .getElementById("result")
+            .addEventListener(
+                "change",
+                updateExpiryFieldState
+            );
+
+        document
+            .getElementById("motForm")
+            .addEventListener("submit", event => {
+                event.preventDefault();
+
+                const record =
+                    buildMotRecord();
+
+                const error =
+                    validateMotRecord(record);
+
+                const status =
+                    document.getElementById("statusMessage");
+
+                if (error) {
+                    status.className =
+                        "status-message status-error";
+
+                    status.textContent = error;
+                    return;
+                }
+
+                status.textContent = "";
+
+                pendingMotRecord = record;
+                pendingWarnings = getDateWarnings();
+
+                showPreview(
+                    record,
+                    pendingWarnings
+                );
+            });
+
+        document
+            .getElementById("cancelButton")
+            .addEventListener("click", () => {
+                document.getElementById("preview").style.display =
+                    "none";
+
+                document.getElementById("motForm").style.display =
+                    "block";
+
+                document.getElementById("statusMessage").textContent =
+                    "";
+            });
+
+        document.getElementById("confirmButton").addEventListener("click",()=>{ if(pendingMotRecord) openPasswordModal(); });
+        document.getElementById("passwordCancelButton").addEventListener("click",closePasswordModal);
+        document.getElementById("passwordModal").addEventListener("click",event=>{ if(event.target.id==="passwordModal") closePasswordModal(); });
+        document
+            .getElementById("passwordForm")
+            .addEventListener("submit", async event => {
+                event.preventDefault();
+
+                if (!pendingMotRecord) {
+                    closePasswordModal();
+                    return;
+                }
+
+                const input =
+                    document.getElementById("modalAdminPassword");
+
+                const errorBox =
+                    document.getElementById("passwordModalError");
+
+                const button =
+                    document.getElementById("passwordSaveButton");
+
+                const password = input.value;
+
+                errorBox.textContent = "";
+                errorBox.style.display = "none";
+                button.disabled = true;
+                button.textContent = "Saving...";
+
+                try {
+                    const result =
+                        await saveMotRecord(
+                            pendingMotRecord,
+                            password
+                        );
+
+                    const message =
+                        result.message ||
+                        `MOT for ${pendingMotRecord.Registration} saved successfully.`;
+
+                    closePasswordModal();
+                    showSuccessScreen(message);
+
+                } catch (error) {
+                    input.value = "";
+                    input.focus();
+                    errorBox.textContent = error.message;
+                    errorBox.style.display = "block";
+
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Confirm and save";
+                }
+            });
+        document.addEventListener("keydown",event=>{ if(event.key==="Escape"&&document.getElementById("passwordModal").classList.contains("open")) closePasswordModal(); });
+
+        document
+            .getElementById("addAnotherButton")
+            .addEventListener("click", resetMotForm);
+
+
+        document.addEventListener("click", event => {
+            const wrapper =
+                document.querySelector(
+                    ".vehicle-search-wrapper"
+                );
+
+            if (!wrapper.contains(event.target)) {
+                hideVehicleResults();
+            }
+        });
+
+        populateExpiryDateDropdowns();
+        initialise();
+    </script>
+</body>
+</html>
